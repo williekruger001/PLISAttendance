@@ -3,6 +3,8 @@ import { NavController, Platform } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
+import { LoginPage } from '../login/login'
+import { Storage } from '@ionic/storage';
 
 
 
@@ -21,7 +23,8 @@ export class HomePage {
     public network: Network,
     public iab: InAppBrowser,
     public platform: Platform,
-    public authenticatedUser: AuthenticatedUserProvider
+    public authenticatedUser: AuthenticatedUserProvider,
+    public storage: Storage
   ) {
 
   }
@@ -32,8 +35,18 @@ export class HomePage {
     this.eNumber = this.authenticatedUser.user.UserID;
 
 
-    //this.checkNetwork();
+    this.checkNetwork();
     //this.createBrowser();
+
+  }
+
+  clearStorage() {
+
+    this.storage.clear().then(() => {
+      alert("Storage cleared.");
+    })
+    this.platform.exitApp();
+    //this.navCtrl.push(LoginPage);
 
   }
 
