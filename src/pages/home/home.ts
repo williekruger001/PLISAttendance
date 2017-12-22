@@ -27,9 +27,13 @@ export class HomePage {
   }
 
   ionViewDidLoad() {
-    alert(this.authenticatedUser.user.UserID);
-    this.checkNetwork();
-    this.createBrowser();
+    //alert(this.authenticatedUser.user.UserID);
+
+    this.eNumber = this.authenticatedUser.user.UserID;
+
+
+    //this.checkNetwork();
+    //this.createBrowser();
 
   }
 
