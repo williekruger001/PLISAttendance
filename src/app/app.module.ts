@@ -7,9 +7,25 @@ import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
+import { LoginPage } from '../pages/login/login';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
+import { Network } from '@ionic-native/network'
+
+import { SQLite } from '@ionic-native/sqlite';
+
+import { QRScanner } from '@ionic-native/qr-scanner';
+
+import { FingerprintAIO } from '@ionic-native/fingerprint-aio';
+
+import { IonicStorageModule } from '@ionic/storage';
+
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+
+import { AppVersion } from '@ionic-native/app-version';
+import { AuthenticatedUserProvider } from '../providers/authenticated-user/authenticated-user';
 
 @NgModule({
   declarations: [
@@ -17,11 +33,15 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    LoginPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot({
+      name: '_plisDB'
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -29,12 +49,20 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     AboutPage,
     ContactPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    LoginPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    Network,
+    SQLite,    
+    QRScanner,
+    FingerprintAIO,
+    InAppBrowser,
+    AppVersion,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    AuthenticatedUserProvider
   ]
 })
 export class AppModule {}
