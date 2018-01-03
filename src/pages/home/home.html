@@ -9,11 +9,33 @@
     <ion-icon [name]="networkIcon" [color]="networkIconColor"></ion-icon>
     PLIS Attendance Overview
   </h2>
-  <p>
-    {{eNumber}}
-  </p>
-  <p>
-    <button ion-button (click)='clearStorage()'>Clear Storage</button>
-  </p>
+
+  <br />
+
+  <h3>Authenticated User</h3>
+
+  <ion-item>
+    <ion-label>
+      <ion-icon name="person" color="orange"></ion-icon> {{givenName}} {{surname}} ({{eNumber}})</ion-label>
+  </ion-item>
+
+  <br/>
+
+  <ion-item>
+    <ion-label>
+      <ion-icon name="people" color="orange"></ion-icon> {{role}}</ion-label>
+  </ion-item>
+
+  <br/>
+
+  <ion-item no-padding>
+    <ion-select [(ngModel)]="selOrganisation" interface="popover" (ionChange)="updateOrg()">
+      <ion-option *ngFor="let item of orgArray" value="{{item.OrgID}}">{{item.OrgName}} ({{item.DeptID}})</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <br/>
+  <button ion-button (click)='logout()' full outline>Logout</button>
+
 
 </ion-content>

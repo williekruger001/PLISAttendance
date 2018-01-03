@@ -8,31 +8,29 @@
 
 <ion-content padding>
 
-  <br />  
+  <br />
 
-    <ion-item>
-      <ion-label>Select an Environment</ion-label>
-      <ion-select [(ngModel)]="selEnvironment" interface='popover'>
-        <ion-option value="prod" selected>Production</ion-option>
-        <ion-option value="train">Training</ion-option>
-        <ion-option value="test">Test</ion-option>
-      </ion-select>
-    </ion-item>
+  <ion-item>
+    <ion-label>Select an Environment</ion-label>
+    <ion-select [(ngModel)]="selEnvironment" interface='popover'>
+      <ion-option *ngFor="let item of envArray" value="{{item.value}}">{{item.name}} </ion-option>
+    </ion-select>
+  </ion-item>
 
-    <br />
+  <br />
 
-    <ion-item>
-      <ion-label>Remember my Environment</ion-label>
-      <ion-checkbox [(ngModel)]="chkChoice" (ionChange)="updatechkShow()"></ion-checkbox>
-    </ion-item>
+  <ion-item>
+    <ion-label>Remember my Environment</ion-label>
+    <ion-checkbox [(ngModel)]="chkChoice" (ionChange)="updateChkShow()"></ion-checkbox>
+  </ion-item>
 
-    <br />
+  <br />
 
-    <ion-item>
-      <ion-label>Don't show this screen again</ion-label>
-      <ion-checkbox [(ngModel)]="chkShow" [disabled]="isActiveChkShow"></ion-checkbox>
-    </ion-item>  
-  
+  <ion-item>
+    <ion-label>Don't show this screen again</ion-label>
+    <ion-checkbox [(ngModel)]="chkShow" [disabled]="isDisabledChkShow"></ion-checkbox>
+  </ion-item>
+
   <br />
 
   <button ion-button (click)='doLogin()' full outline>Login</button>

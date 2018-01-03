@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { NavController, Platform, AlertController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
-import { LoginPage } from '../login/login'
 import { Storage } from '@ionic/storage';
-
-
 
 @Component({
   selector: 'page-home',
@@ -14,40 +11,69 @@ import { Storage } from '@ionic/storage';
 })
 export class HomePage {
 
+  USER: string = '_user';
+  ENV_ARRAY: string = '_envArray';
+
   networkIcon: string = 'wifi';
   networkIconColor: string = 'green';
-  eNumber: any;
+  eNumber: any = this.authenticatedUser.user.UserID;
+  givenName: any = this.authenticatedUser.user.GivenName;
+  surname: any = this.authenticatedUser.user.Surname;
+  role: any = this.authenticatedUser.user.Role;
+  orgSelected: any = this.authenticatedUser.user.Org_Selected;
   ref: any;
+  orgArray: any;
+  selOrganisation: any;
 
   constructor(public navCtrl: NavController,
     public network: Network,
     public iab: InAppBrowser,
     public platform: Platform,
     public authenticatedUser: AuthenticatedUserProvider,
-    public storage: Storage
+    public storage: Storage,
+    public alertCtrl: AlertController
   ) {
 
   }
 
   ionViewDidLoad() {
-    //alert(this.authenticatedUser.user.UserID);
 
-    this.eNumber = this.authenticatedUser.user.UserID;
+    this.platform.ready().then(() => {
 
+      this.checkNetwork();
 
-    this.checkNetwork();
-    //this.createBrowser();
+      this.getOrganisations().then(
+        (response) => {
+          this.selOrganisation = this.authenticatedUser.user.Org_Selected;
+        },
+        (error) => {
+          this.errorAlert(
+            'User Partions.',
+            error
+          );
+        });
 
+    });
   }
 
-  clearStorage() {
-
-    this.storage.clear().then(() => {
-      alert("Storage cleared.");
+  getOrganisations() {
+    return new Promise((resolve, reject) => {
+      if (this.authenticatedUser.user.Partitions.length > 0) {
+        this.orgArray = this.authenticatedUser.user.Partitions;  
+        this.orgArray.sort((a, b) => a.OrgName.localeCompare(b.OrgName));      
+        resolve(this.orgArray);
+      } else {
+        reject(Error("There are no Partitions for the Authenticated user"));
+      }
     })
-    this.platform.exitApp();
-    //this.navCtrl.push(LoginPage);
+  }
 
+  logout() {
+    this.storage.remove(this.USER).then(() => {
+      this.storage.remove(this.ENV_ARRAY).then(() => {
+         this.platform.exitApp();
+      });     
+    });
   }
 
   checkNetwork() {
@@ -64,67 +90,18 @@ export class HomePage {
 
   }
 
-  createBrowser() {
+  updateOrg() {
+    this.authenticatedUser.user.Org_Selected = this.selOrganisation;
+    this.storage.set(this.USER, this.authenticatedUser.user);
+  }
 
-    this.platform.ready().then(() => {
-
-
-      /*this.ref = cordova.InAppBrowser.open('https://plis-admin-test.det.wa.edu.au/webapi/plisappauth.aspx', '_blank', 'location=yes');
-
-      this.ref.addEventListener('loadstop', () => {
-        //this.ref.insertCSS({ code: "body {background-color: black;}" });
-
-        this.ref.executeScript({ code: 'getAuthenticationInfo();' }, (data) => {
-
-
-          if (data[0] != null) {
-            //alert(data[0]);
-
-            //Turn the JSON data into an Authenticated user object
-            this.authenticatedUser.user = JSON.parse(data[0]);
-
-            alert(this.authenticatedUser.user.UserID);
-
-            this.ref.close();
-
-          } else {
-
-            alert('No data returned!');
-
-          }
-        });
-
-
-
-      }
-      );*/
-
-      /*const browser = this.iab.create('https://plis-admin-test.det.wa.edu.au/test9.aspx', '_blank', 'location=yes');
-
-      let authenticatedUser: any;
-
-      browser.executeScript({ code: 'getAuthenticationInfo()' }).then(
-        (data) => {
-
-          if (data[0] == null) {
-            alert('No data returned!');
-          } else {
-            alert(data[0]);
-          }
-        },
-
-        (error) => {
-          alert(error);
-        });*/
-
+  errorAlert(title: string, subTitle: string) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      subTitle: subTitle,
+      buttons: ['OK']
     });
-
-
-
-
-
-
-
+    alert.present();
   }
 
 }

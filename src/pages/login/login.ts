@@ -17,6 +17,7 @@ export class LoginPage {
   //Constants for storage keys
   ENV: string = '_env';
   ENV_SAVE: string = '_envSave';
+  ENV_ARRAY: string = '_envArray';
   BYPASS_LOGIN: string = '_bypassLogin';
   USER: string = '_user';
   AUTH_TIME: string = '_authTime';
@@ -24,11 +25,12 @@ export class LoginPage {
   //Variables
   chkChoice: boolean;
   chkShow: boolean;
-  isActiveChkShow: boolean = true;
+  isDisabledChkShow: boolean = true;
   env: string;
   envSave: boolean;
   bypassLogin: boolean;
   selEnvironment: any;
+  envArray: any = [];
 
 
   constructor(
@@ -44,67 +46,38 @@ export class LoginPage {
 
   ionViewDidLoad() {
 
-    /*this.storage.clear().then(() => {
-      alert("Storage cleared.");
-    })*/
-
-    this.processAuthentication();
-
-  }
-
-//Everything in the storage provider is async, work within the Promise's
-
-// 1. Check user preferences
-
-// 2. Check if there is an authenticated user
-
-// 3. Check if the authenticated user's session is still valid -- Default is 2 days
-
-// 4. Check for Internet connection
-
-// 5. Do navigation according to user status and preferences
-
-getUserPreferences() {
-
-
-
-}
-
-
-  checkAuthentication() {
-
-    this.storage.get(this.AUTH_TIME).then((val) => {
-
-      let DateDiff: any = {
-
-        inDays: (d1: any, d2: any) => {
-          let t2: number = d2.getTime();
-          let t1: number = d1.getTime();
-
-          return (t2 - t1) / (24 * 3600 * 1000);
-        }
-      }
-
-      if (val) {
-
-        if (DateDiff.inDays(Date.now, val) > 1) {
-          this.storage.remove(this.USER).then(() => {
-
-            let alert = this.alertCtrl.create({
-              title: 'Authentication session.',
-              subTitle: 'Your authentication details expired. Please click the login button to update your details.',
-              buttons: ['OK']
-            });
-            alert.present();
-
-          });
-        } else {
-          this.processAuthentication();
-        }
-      } else {
-        this.processAuthentication();
-      }
+    this.authenticatedUser.getEnvironments().then((response) => {
+      this.envArray = this.authenticatedUser.envArray;
+      this.processAuthentication();
     });
+
+  }    
+
+  getAuthAge() { //Return a Promise
+
+    return new Promise((resolve, reject) => {
+
+      this.storage.get(this.AUTH_TIME).then((val) => {
+
+        if (val) {
+
+          if ((Date.now() - val) / (24 * 3600 * 1000) < 1) {
+
+            resolve(true);
+
+          } else {
+            this.storage.remove(this.USER).then(() => {
+              reject(Error("The authenticated user's session expired"));
+            });
+
+          }
+
+        }
+
+      });
+
+    })
+
   }
 
   processAuthentication() {
@@ -113,6 +86,8 @@ getUserPreferences() {
       if (val) {
         this.env = val;
         this.selEnvironment = this.env;
+      } else {
+        this.selEnvironment = "prod"
       }
     });
 
@@ -120,7 +95,7 @@ getUserPreferences() {
       if (val) {
         this.envSave = val;
         this.chkChoice = this.envSave;
-        this.isActiveChkShow = false;
+        this.isDisabledChkShow = !this.envSave;
       }
     });
 
@@ -138,35 +113,36 @@ getUserPreferences() {
 
                 //Check here how old user session is
 
+                this.getAuthAge().then(
+                  (response) => {
+                    if (response == true) {
+                      this.navCtrl.push(TabsPage);
+                    }
+                  }, (error) => {
+                    this.errorAlert(
+                      'Authentication session.',
+                      'Your authentication details expired. Please click the login button to update your details.'
+                    );
+                  });
 
-
-                this.navCtrl.push(TabsPage);
               } else {
 
                 if (this.network.type != 'none') {
 
-                  this.createBrowser();
                   if (this.authenticatedUser.user) {
                     this.navCtrl.push(TabsPage);
                   } else {
-
-                    let alert = this.alertCtrl.create({
-                      title: 'Authentication issue.',
-                      subTitle: 'There was a problem with the authentication process. Please try again.',
-                      buttons: ['OK']
-                    });
-                    alert.present();
-
+                    this.errorAlert(
+                      'Authentication issue.',
+                      'There was a problem with the authentication process. Please try again.'
+                    );
                   }
 
                 } else {
-
-                  let alert = this.alertCtrl.create({
-                    title: 'Internet Connection',
-                    subTitle: 'There is no Internet connection available and no authenticated account in the app. Please ensure an Internet connection to authenticate.',
-                    buttons: ['OK']
-                  });
-                  alert.present();
+                  this.errorAlert(
+                    'Internet Connection.',
+                    'There is no Internet connection available and no authenticated account in the app. Please ensure an Internet connection to authenticate.'
+                  );
 
                 }
 
@@ -180,37 +156,45 @@ getUserPreferences() {
 
   }
 
-  createBrowser() {
+  createBrowser() { //Return a Promise
 
-    this.platform.ready().then(() => {
+    return new Promise((resolve, reject) => {
 
-      const ref = cordova.InAppBrowser.open('https://plis-admin-test.det.wa.edu.au/webapi/plisappauth.aspx', '_blank', 'location=yes');
+      this.platform.ready().then(() => {
 
-      ref.addEventListener('loadstop', () => {
+        let loginUrl: string = this.authenticatedUser.getEnvironment(this.env).url + "plisappauth.aspx";
 
-        ref.executeScript({ code: 'getAuthenticationInfo();' }, (data) => {
+        //'https://plis-admin-test.det.wa.edu.au/webapi/plisappauth.aspx'
 
-          if (data[0] != null) {
+        const ref = cordova.InAppBrowser.open(loginUrl, '_blank', 'location=yes');
+
+        ref.addEventListener('loadstop', () => {
+
+          ref.executeScript({ code: 'getAuthenticationInfo();' }, (data) => {
+
+            if (data[0] != null) {
 
 
-            //Turn the JSON data into an Authenticated user object
-            this.authenticatedUser.user = JSON.parse(data[0]);
-            this.storage.set(this.USER, this.authenticatedUser.user);
-            this.storage.set(this.AUTH_TIME, Date.now());
-            ref.close();
+              //Turn the JSON data into an Authenticated user object
+              this.authenticatedUser.user = JSON.parse(data[0]);
+              this.storage.set(this.USER, this.authenticatedUser.user);
+              this.storage.set(this.AUTH_TIME, Date.now());
+              ref.close();
+              resolve(this.authenticatedUser.user);
 
-          } else {
+            } else {
 
-            alert('No data returned!');
+              reject('No data returned!');
 
-          }
+            }
+
+          });
 
         });
 
       });
 
     });
-
   }
 
   saveAuthentication() {
@@ -223,25 +207,78 @@ getUserPreferences() {
 
   doLogin() {
 
-    this.saveAuthentication();
+    // 1. Check if there is an authenticated user in the data store
 
-    if (!this.authenticatedUser.user) {
-      this.createBrowser();
+    this.storage.get(this.USER).then((val) => {
+      if (val) { //There is an authenticated user in the data store        
+        //Get the auth age
+        this.getAuthAge().then( //Check auth age
+          (response) => {
+            if (response == true) {
+              //Set the singleton for the user
+              this.authenticatedUser.user = val;
+              this.saveAuthentication();
+              //Navigate to landing page
+              this.navCtrl.push(TabsPage);
+            }
+          },
+          (error) => {
+            this.errorAlert(
+              'Authentication session.',
+              'Your authentication details expired. Please click the login button to update your details.'
+            );
+
+          });
+
+      } else { //There is no authenticated user in the data store
+
+        if (this.network.type != 'none') { //We have internet 
+
+          this.createBrowser().then( //Do authentication
+            (response) => {
+              this.saveAuthentication();
+              this.navCtrl.push(TabsPage);
+            },
+            (error) => {
+              this.errorAlert(
+                'Authentication issue.',
+                'There was a problem with the authentication process. Please try again.'
+              );
+
+            });
+
+        } else { //No internet connection and no authenticated user in data store
+
+          this.errorAlert(
+            'Internet Connection',
+            'There is no Internet connection available and no authenticated account in the app. Please ensure an Internet connection to authenticate.'
+          );
+
+        }
+
+      }
+    });
+
+  }
+
+  updateChkShow() {
+
+    if (this.chkChoice == true) {
+      this.isDisabledChkShow = false;
     } else {
-      this.navCtrl.push(TabsPage);
+      this.chkShow = false;
+      this.isDisabledChkShow = true;
     }
 
   }
 
-  updatechkShow() {
-
-    if (this.chkChoice == true) {
-      this.isActiveChkShow = false;
-    } else {
-      this.chkShow = false;
-      this.isActiveChkShow = true;
-    }
-
+  errorAlert(title: string, subTitle: string) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      subTitle: subTitle,
+      buttons: ['OK']
+    });
+    alert.present();
   }
 
 }
