@@ -26,18 +26,24 @@ export class EventsPage {
     , public network: Network) {
   }
 
-checkNetwork() {
+  checkNetwork() {
 
-     this.network.onDisconnect().subscribe(() => {
+    if (this.network.type != 'none') {
+      this.isDisabledAddEvent = false;
+    } else {
+      this.isDisabledAddEvent = true;
+    }
+
+    this.network.onDisconnect().subscribe(() => {
       this.isDisabledAddEvent = true;
     });
 
     this.network.onConnect().subscribe(() => {
       this.isDisabledAddEvent = false;
-    }); 
+    });
 
-  
-}
+
+  }
 
   ionViewDidLoad() {
     this.checkNetwork();

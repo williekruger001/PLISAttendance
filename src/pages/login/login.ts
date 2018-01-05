@@ -14,6 +14,9 @@ declare var cordova;
 })
 export class LoginPage {
 
+//TO DO: Get all parameters from PLIS database on initial start-up of app. Internet connection is required.
+//This will ensure that the app is highly configurable and maintainable without deploying a new release everytime 
+
   //Constants for storage keys
   ENV: string = '_env';
   ENV_SAVE: string = '_envSave';
@@ -61,7 +64,7 @@ export class LoginPage {
 
         if (val) {
 
-          if ((Date.now() - val) / (24 * 3600 * 1000) < 1) {
+          if ((Date.now() - val) / (24 * 3600 * 1000) < 1) { //TO DO: Put the authentication age in the PLIOS database as a parameter for app initialisation
 
             resolve(true);
 
@@ -162,10 +165,9 @@ export class LoginPage {
 
       this.platform.ready().then(() => {
 
+        //TO DO: Put the login page name into the PLIS database as parameter and initialise app with these values.
         let loginUrl: string = this.authenticatedUser.getEnvironment(this.env).url + "plisappauth.aspx";
-
-        //'https://plis-admin-test.det.wa.edu.au/webapi/plisappauth.aspx'
-
+        
         const ref = cordova.InAppBrowser.open(loginUrl, '_blank', 'location=yes');
 
         ref.addEventListener('loadstop', () => {

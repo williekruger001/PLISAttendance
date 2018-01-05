@@ -14,5 +14,14 @@
 
 
 <ion-content padding>
-    <h3>Select an Event for Attendance</h3>
+
+  <h3>Select an Event for Attendance</h3>
+
+  <ion-item [hidden]="isHiddenNetworkMsg" text-wrap>
+    <ion-label>
+      <ion-icon name="warning" color="orange"></ion-icon>
+      Network is unavailable - Please make sure you have an Internet connection.
+    </ion-label>
+  </ion-item>
+
 </ion-content>

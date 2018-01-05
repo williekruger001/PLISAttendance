@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the AddEventPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Network } from '@ionic-native/network';
 
 @IonicPage()
 @Component({
@@ -15,11 +9,34 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class AddEventPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  isHiddenNetworkMsg: boolean = true;
+
+  constructor(
+    public navCtrl: NavController
+    , public navParams: NavParams
+    , public network: Network) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad AddEventPage');
+    this.checkNetwork();
+  }
+
+  checkNetwork() {
+
+    if (this.network.type != 'none') {
+      this.isHiddenNetworkMsg = true;
+    } else {
+      this.isHiddenNetworkMsg = false;
+    }
+
+    this.network.onDisconnect().subscribe(() => {
+      this.isHiddenNetworkMsg = false;
+    });
+
+    this.network.onConnect().subscribe(() => {
+      this.isHiddenNetworkMsg = true;
+    });
+
   }
 
 }
