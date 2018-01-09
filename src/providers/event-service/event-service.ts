@@ -3,15 +3,17 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
 
 @Injectable()
+
 export class EventServiceProvider {
 
   eventList: any
 
   constructor(
+    //public http: Http
     public http: Http
   ) { }
 
-  getEvents() {
+  /*getEvents() {
 
     return new Promise((resolve, reject) => {
 
@@ -35,6 +37,6 @@ export class EventServiceProvider {
 
     });
 
-  }
+  }*/
 
 }

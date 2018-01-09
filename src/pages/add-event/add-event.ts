@@ -7,6 +7,7 @@ import { EventServiceProvider } from '../../providers/event-service/event-servic
 @Component({
   selector: 'page-add-event',
   templateUrl: 'add-event.html',
+  providers: [EventServiceProvider]
 })
 export class AddEventPage {
 
@@ -16,7 +17,7 @@ export class AddEventPage {
     public navCtrl: NavController
     , public navParams: NavParams
     , public network: Network
-    //, public eventService: EventServiceProvider
+    , public eventService: EventServiceProvider
   ) { }
 
   ionViewDidLoad() {
