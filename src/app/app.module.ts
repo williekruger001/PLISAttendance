@@ -28,6 +28,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { AppVersion } from '@ionic-native/app-version';
 import { AuthenticatedUserProvider } from '../providers/authenticated-user/authenticated-user';
+import { EventServiceProvider } from '../providers/event-service/event-service';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { AuthenticatedUserProvider } from '../providers/authenticated-user/authe
     InAppBrowser,
     AppVersion,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    AuthenticatedUserProvider
+    AuthenticatedUserProvider,
+    EventServiceProvider
   ]
 })
 export class AppModule {}

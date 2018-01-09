@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
+import { EventServiceProvider } from '../../providers/event-service/event-service'
 
 @IonicPage()
 @Component({
@@ -14,11 +15,21 @@ export class AddEventPage {
   constructor(
     public navCtrl: NavController
     , public navParams: NavParams
-    , public network: Network) {
-  }
+    , public network: Network
+    //, public eventService: EventServiceProvider
+  ) { }
 
   ionViewDidLoad() {
     this.checkNetwork();
+
+    /*this.eventService.getEvents().then((response) => {
+      alert(response[0].EventName);
+    },
+      (error) => {
+        alert(error);
+      }
+
+    )*/
   }
 
   checkNetwork() {

@@ -3,13 +3,6 @@ import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angu
 import { AddEventPage } from '../add-event/add-event';
 import { Network } from '@ionic-native/network';
 
-/**
- * Generated class for the EventsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-events',
