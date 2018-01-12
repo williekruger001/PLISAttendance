@@ -24,4 +24,17 @@
     </ion-label>
   </ion-item>
 
+  <ion-list no-padding>
+    <button ion-item *ngFor="let event of eventList; let i = index" text-wrap (click)="addEvent(i)">
+      <ion-icon name="calendar" color="orange" item-start></ion-icon>
+      <br /> {{event.EventName}}
+      <br /> ID: {{event.EventID}}
+      <br /> Start: {{event.EventStart}}
+      <br /> End: {{event.EventEnd}}
+      
+        <!--<ion-icon name="add" item-end></ion-icon>-->
+      
+    </button>
+  </ion-list>
+
 </ion-content>

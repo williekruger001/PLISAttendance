@@ -1,45 +1,73 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, LoadingController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { EventServiceProvider } from '../../providers/event-service/event-service'
+import { Storage } from '@ionic/storage';
+import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
+
 
 @IonicPage()
 @Component({
   selector: 'page-add-event',
   templateUrl: 'add-event.html',
-  providers: [EventServiceProvider]
+
 })
 export class AddEventPage {
 
   isHiddenNetworkMsg: boolean = true;
+  eventList: any;
 
   constructor(
     public navCtrl: NavController
     , public navParams: NavParams
     , public network: Network
     , public eventService: EventServiceProvider
+    , public storage: Storage
+    , public localDataService: LocalDataServiceProvider
+    , public viewCtrl: ViewController
+    , public loadingCtrl: LoadingController
   ) { }
 
   ionViewDidLoad() {
-    this.checkNetwork();
 
-    /*this.eventService.getEvents().then((response) => {
-      alert(response[0].EventName);
-    },
-      (error) => {
-        alert(error);
+    if (this.checkNetwork()) {
+      this.loadEvents();
+    }
+  }
+
+  loadEvents() {
+    let env: string
+
+    let loader = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    loader.present();
+
+    this.storage.get('_env').then((val) => {
+      if (val) {
+        env = val;
+      } else {
+        env = "prod"
       }
+      this.eventService.getEvents(env).then((data) => {
+        this.eventList = data;
+        this.eventList = this.eventList.d; 
+        loader.dismiss();       
+      }, (err) => {
+        loader.dismiss(); 
+        alert(err);
+      });
 
-    )*/
+    });
+
+  }
+
+  addEvent(i: any) {
+    this.localDataService.addEventLocal(this.eventList[i]);  
+    this.viewCtrl.dismiss(); 
   }
 
   checkNetwork() {
-
-    if (this.network.type != 'none') {
-      this.isHiddenNetworkMsg = true;
-    } else {
-      this.isHiddenNetworkMsg = false;
-    }
 
     this.network.onDisconnect().subscribe(() => {
       this.isHiddenNetworkMsg = false;
@@ -48,6 +76,14 @@ export class AddEventPage {
     this.network.onConnect().subscribe(() => {
       this.isHiddenNetworkMsg = true;
     });
+
+    if (this.network.type != 'none') {
+      this.isHiddenNetworkMsg = true;
+      return true
+    } else {
+      this.isHiddenNetworkMsg = false;
+      return false
+    }
 
   }
 

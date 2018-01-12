@@ -10,6 +10,7 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { LoginPage } from '../pages/login/login';
 import { EventsPage } from '../pages/events/events'
 import { AddEventPage } from '../pages/add-event/add-event'
+import { SessionPage } from '../pages/session/session'
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -29,6 +30,9 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AppVersion } from '@ionic-native/app-version';
 import { AuthenticatedUserProvider } from '../providers/authenticated-user/authenticated-user';
 import { EventServiceProvider } from '../providers/event-service/event-service';
+import { HttpClientModule } from '@angular/common/http';
+import { LocalDataServiceProvider } from '../providers/local-data-service/local-data-service';
+
 
 @NgModule({
   declarations: [
@@ -39,10 +43,12 @@ import { EventServiceProvider } from '../providers/event-service/event-service';
     TabsPage,
     LoginPage,
     EventsPage,
-    AddEventPage
+    AddEventPage,
+    SessionPage
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot({
       name: '_plisDB'
@@ -57,7 +63,8 @@ import { EventServiceProvider } from '../providers/event-service/event-service';
     TabsPage,
     LoginPage,
     EventsPage,
-    AddEventPage
+    AddEventPage,
+    SessionPage
   ],
   providers: [
     StatusBar,
@@ -70,7 +77,8 @@ import { EventServiceProvider } from '../providers/event-service/event-service';
     AppVersion,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthenticatedUserProvider,
-    EventServiceProvider
+    EventServiceProvider,
+    LocalDataServiceProvider
   ]
 })
 export class AppModule {}

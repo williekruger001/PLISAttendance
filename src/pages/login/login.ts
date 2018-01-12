@@ -4,6 +4,7 @@ import { TabsPage } from '../tabs/tabs';
 import { Storage } from '@ionic/storage';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 import { Network } from '@ionic-native/network';
+import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
 
 declare var cordova;
 
@@ -14,8 +15,8 @@ declare var cordova;
 })
 export class LoginPage {
 
-//TO DO: Get all parameters from PLIS database on initial start-up of app. Internet connection is required.
-//This will ensure that the app is highly configurable and maintainable without deploying a new release everytime 
+  //TO DO: Get all parameters from PLIS database on initial start-up of app. Internet connection is required.
+  //This will ensure that the app is highly configurable and maintainable without deploying a new release everytime 
 
   //Constants for storage keys
   ENV: string = '_env';
@@ -43,18 +44,20 @@ export class LoginPage {
     , public platform: Platform
     , public authenticatedUser: AuthenticatedUserProvider
     , public network: Network
-    , public alertCtrl: AlertController) {
+    , public alertCtrl: AlertController
+    , public localDataService: LocalDataServiceProvider) {
 
   }
 
   ionViewDidLoad() {
 
+    //this.storage.remove("_eventListLocal");
     this.authenticatedUser.getEnvironments().then((response) => {
       this.envArray = this.authenticatedUser.envArray;
       this.processAuthentication();
     });
 
-  }    
+  }
 
   getAuthAge() { //Return a Promise
 
@@ -119,6 +122,9 @@ export class LoginPage {
                 this.getAuthAge().then(
                   (response) => {
                     if (response == true) {
+                      //TO DO Get eventlist here
+                      this.localDataService.getEventListLocal();
+
                       this.navCtrl.push(TabsPage);
                     }
                   }, (error) => {
@@ -133,6 +139,7 @@ export class LoginPage {
                 if (this.network.type != 'none') {
 
                   if (this.authenticatedUser.user) {
+                    this.localDataService.getEventListLocal();
                     this.navCtrl.push(TabsPage);
                   } else {
                     this.errorAlert(
@@ -167,7 +174,7 @@ export class LoginPage {
 
         //TO DO: Put the login page name into the PLIS database as parameter and initialise app with these values.
         let loginUrl: string = this.authenticatedUser.getEnvironment(this.env).url + "plisappauth.aspx";
-        
+
         const ref = cordova.InAppBrowser.open(loginUrl, '_blank', 'location=yes');
 
         ref.addEventListener('loadstop', () => {
@@ -221,6 +228,7 @@ export class LoginPage {
               this.authenticatedUser.user = val;
               this.saveAuthentication();
               //Navigate to landing page
+              this.localDataService.getEventListLocal();
               this.navCtrl.push(TabsPage);
             }
           },

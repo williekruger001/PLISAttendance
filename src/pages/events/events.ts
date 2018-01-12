@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { AddEventPage } from '../add-event/add-event';
 import { Network } from '@ionic-native/network';
+import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
+import { SessionPage } from '../session/session'
 
 @IonicPage()
 @Component({
@@ -11,12 +13,39 @@ import { Network } from '@ionic-native/network';
 export class EventsPage {
 
   isDisabledAddEvent: boolean = true;
+  eventListLocal: any;
 
   constructor(
     public navCtrl: NavController
     , public navParams: NavParams
     , public modalCtrl: ModalController
-    , public network: Network) {
+    , public network: Network
+    , public localDataService: LocalDataServiceProvider) {
+
+      
+
+  }
+
+  ionViewDidLoad() {
+    this.checkNetwork();
+    this.getEventListLocal();
+  }
+
+  getEventListLocal() {
+    this.eventListLocal = this.localDataService.eventListLocal;   
+
+  }
+
+  presentEventsModal() {
+    let eventModal = this.modalCtrl.create(AddEventPage);
+    eventModal.present();
+  }
+
+  getSessionDetails(event, sessionID) {
+  this.navCtrl.push(SessionPage, {
+    event: event,
+    sessionID: sessionID
+  })
   }
 
   checkNetwork() {
@@ -37,14 +66,4 @@ export class EventsPage {
 
 
   }
-
-  ionViewDidLoad() {
-    this.checkNetwork();
-  }
-
-  presentAboutModal() {
-    let contactModal = this.modalCtrl.create(AddEventPage);
-    contactModal.present();
-  }
-
 }

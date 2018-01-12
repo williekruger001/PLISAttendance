@@ -1,42 +1,43 @@
-//import { HttpClient } from '@angular/common/http';
-import { Http, Headers, RequestOptions } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
+import { Storage } from '@ionic/storage';
 
 @Injectable()
-
 export class EventServiceProvider {
 
-  eventList: any
+
 
   constructor(
-    //public http: Http
-    public http: Http
-  ) { }
+    public httpClient: HttpClient
+    , public authenticatedUser: AuthenticatedUserProvider
+    , public storage: Storage) {
 
-  /*getEvents() {
+  }
+
+  getEvents(env) {
+
+    let headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+
+    let bypass: string = (this.authenticatedUser.user.Org_Selected == 0) ? 'true' : 'false'
+    let body = {
+      _orgID: this.authenticatedUser.user.Org_Selected,
+      _bypass: bypass
+    };
+
+    let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; //'https://plis-admin-test.det.wa.edu.au/webapi/'
+    let apiMethod: string = 'PLISAppEvents.asmx/GetAttendanceEvents';
 
     return new Promise((resolve, reject) => {
-
-      var headers = new Headers();
-      headers.append("Accept", 'application/json');
-      headers.append('Content-Type', 'application/json; charset=utf-8');
-      let options = new RequestOptions({ headers: headers });
-
-      let postParams = {
-        _orgID: '1',
-        _bypass: 'False'
-      }
-
-      this.http.post("https://plis-admin-test.det.wa.edu.au/webapi/PLISAppEvents.asmx/GetAttendanceEvents", postParams, options)
+      this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
         .subscribe(data => {
-          console.log(data['_body'].d);
-          resolve(data['_body'].d);
-        }, error => {
-          reject(error);// Error getting the data
+          resolve(data);
+        }, (err) => {
+          reject(err.message);
         });
-
     });
 
-  }*/
+  }
 
 }

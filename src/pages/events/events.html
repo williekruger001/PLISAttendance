@@ -15,12 +15,37 @@
 
 <ion-content padding>
 
-    <h3>Events ready for Attendance</h3>
+  <h3>Events ready for Attendance</h3>
 
   <ion-fab right bottom>
-    <button ion-fab mini (click)='presentAboutModal()' [disabled]="isDisabledAddEvent">
+    <button ion-fab mini (click)='presentEventsModal()' [disabled]="isDisabledAddEvent">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
+
+  <ion-list no-padding>
+
+    <ion-item *ngFor="let event of eventListLocal; let i = index" text-wrap>
+      <ion-icon name="calendar" color="orange"></ion-icon>
+      {{event.EventName}}
+      <br /> ID: {{event.EventID}}
+      <br /> Start: {{event.EventStart}}
+      <br /> End: {{event.EventEnd}}
+      <br /> Sessions:
+      <ion-list no-padding>
+        <button ion-item *ngFor="let session of event.Sessions" text-wrap (click)="getSessionDetails(event, session.SessionID)">
+          <ion-icon name="briefcase" color="green"></ion-icon>
+          {{session.SessionName}} 
+          <br /> ID: {{session.SessionID}}
+          <br /> Start: {{session.SessionStart}}
+          <br /> End: {{session.SessionEnd}}
+        </button>
+      </ion-list>
+
+    </ion-item>
+
+
+
+  </ion-list>
 
 </ion-content>
