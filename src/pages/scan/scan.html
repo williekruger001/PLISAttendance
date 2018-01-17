@@ -1,0 +1,77 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Scan</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+
+  <!--<ion-fab left bottom small>
+    <button ion-fab color="dark" (click)="toggleFlash()">
+      <ion-icon name="flash" [color]="flashIconColor"></ion-icon>
+    </button>
+  </ion-fab>-->
+
+
+
+  <ion-fab left bottom small>
+    <button ion-fab color="dark" (click)="toggleCamera()" [disabled]='scannerDisabled'>
+      <ion-icon name="reverse-camera"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-fab right bottom small>
+    <button ion-fab color="dark" (click)="toggleView()" [disabled]='scannerDisabled'>
+      <ion-icon [name]="closeIcon" [color]="closeIconColor"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <h5>
+    Check-In: {{checkInDate}}
+    <br />From: {{startTime}} To: {{endTime}}
+  </h5>
+
+  <div id="divDetails">
+
+
+
+    <!--
+    <p>
+      <ion-icon name="calendar" color="orange"></ion-icon>
+      {{eventName}}
+      <br />Event ID: {{eventID}}
+      <br />Event Start: {{eventStart}}
+      <br /> Event End: {{eventEnd}}
+    </p>
+
+    <p indent>
+      <ion-icon name="briefcase" color="green"></ion-icon>
+      {{sessionName}}
+      <br />Session ID: {{sessionID}}
+      <br />Session Start: {{sessionStart}}
+      <br />Session End: {{sessionEnd}}
+    </p>
+    -->
+
+    Attendance List:
+    <br />
+    <br />
+    <ion-list>
+      <ion-item *ngFor="let attendanceRecord of sessionAttendanceRecordsDetailed" text-wrap>
+        <ion-icon name="person" color="green"></ion-icon>
+        {{attendanceRecord.StaffNumber}} {{attendanceRecord.FullName}} {{attendanceRecord.CheckInTimeDisplay}}
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div style="position: absolute; height: 75%; width: 93%; " id="divScanner">
+    <canvas></canvas>
+    <div class="scanner-laser laser-rightBottom"></div>
+    <div class="scanner-laser laser-rightTop"></div>
+    <div class="scanner-laser laser-leftTop"></div>
+    <div class="scanner-laser laser-leftBottom"></div>
+  </div>
+
+</ion-content>

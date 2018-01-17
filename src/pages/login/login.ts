@@ -52,6 +52,7 @@ export class LoginPage {
   ionViewDidLoad() {
 
     //this.storage.remove("_eventListLocal");
+
     this.authenticatedUser.getEnvironments().then((response) => {
       this.envArray = this.authenticatedUser.envArray;
       this.processAuthentication();
@@ -122,9 +123,7 @@ export class LoginPage {
                 this.getAuthAge().then(
                   (response) => {
                     if (response == true) {
-                      //TO DO Get eventlist here
                       this.localDataService.getEventListLocal();
-
                       this.navCtrl.push(TabsPage);
                     }
                   }, (error) => {
@@ -247,6 +246,7 @@ export class LoginPage {
           this.createBrowser().then( //Do authentication
             (response) => {
               this.saveAuthentication();
+              this.localDataService.getEventListLocal();
               this.navCtrl.push(TabsPage);
             },
             (error) => {

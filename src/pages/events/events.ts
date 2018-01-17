@@ -22,7 +22,7 @@ export class EventsPage {
     , public network: Network
     , public localDataService: LocalDataServiceProvider) {
 
-      
+
 
   }
 
@@ -32,7 +32,7 @@ export class EventsPage {
   }
 
   getEventListLocal() {
-    this.eventListLocal = this.localDataService.eventListLocal;   
+    this.eventListLocal = this.localDataService.eventListLocal;
 
   }
 
@@ -42,10 +42,10 @@ export class EventsPage {
   }
 
   getSessionDetails(event, sessionID) {
-  this.navCtrl.push(SessionPage, {
-    event: event,
-    sessionID: sessionID
-  })
+    this.navCtrl.push(SessionPage, {
+      event: event,
+      sessionID: sessionID
+    });
   }
 
   checkNetwork() {

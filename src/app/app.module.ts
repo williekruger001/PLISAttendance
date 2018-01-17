@@ -11,6 +11,7 @@ import { LoginPage } from '../pages/login/login';
 import { EventsPage } from '../pages/events/events'
 import { AddEventPage } from '../pages/add-event/add-event'
 import { SessionPage } from '../pages/session/session'
+import { ScanPage } from '../pages/scan/scan'
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -44,7 +45,8 @@ import { LocalDataServiceProvider } from '../providers/local-data-service/local-
     LoginPage,
     EventsPage,
     AddEventPage,
-    SessionPage
+    SessionPage,
+    ScanPage
   ],
   imports: [
     BrowserModule,
@@ -64,7 +66,8 @@ import { LocalDataServiceProvider } from '../providers/local-data-service/local-
     LoginPage,
     EventsPage,
     AddEventPage,
-    SessionPage
+    SessionPage,
+    ScanPage
   ],
   providers: [
     StatusBar,

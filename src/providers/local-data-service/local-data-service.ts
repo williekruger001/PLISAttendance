@@ -32,8 +32,10 @@ export class LocalDataServiceProvider {
       this.eventListLocal.push(event);
       this.storage.set(this.EVENT_LIST_LOCAL, this.eventListLocal);
     }
+  }
 
-
+  saveEventListLocal(eventList: any) {
+    this.storage.set(this.EVENT_LIST_LOCAL, eventList);
   }
 
 }

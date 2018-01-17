@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the SessionPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
+import { ScanPage } from '../scan/scan'
 
 @IonicPage()
 @Component({
@@ -15,19 +9,63 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class SessionPage {
 
-event: any;
-sessionID: any;
+  event: any;
+  session: any;
+  sessionID: any;
+  eventID: any;
+  eventName: string;
+  eventStart: string;
+  eventEnd: string;
+  sessionName: string;
+  sessionStart: string;
+  sessionEnd: string;
+  checkInTimes: any;
 
   constructor(
     public navCtrl: NavController
-    , public navParams: NavParams) {
+    , public navParams: NavParams
+    , public modalCtrl: ModalController) {
 
-      this.event = navParams.get("event");
-      this.sessionID = navParams.get("sessionID");
+    this.event = navParams.get("event");
+    this.sessionID = navParams.get("sessionID");
   }
 
   ionViewDidLoad() {
-    alert(this.event.EventName + " " + this.sessionID);
+
+    this.setFields();
+  }
+
+  setFields() {
+
+    this.eventName = this.event.EventName;
+    this.eventID = this.event.EventID;
+    this.eventStart = this.event.EventStart;
+    this.eventEnd = this.event.EventEnd;
+
+    this.session = this.event.Sessions.find((obj) => {
+      return obj.SessionID === this.sessionID;
+    });
+    
+    this.checkInTimes = this.session.CheckInTimes;
+
+    this.sessionName = this.session.SessionName;
+    this.sessionStart = this.session.SessionStart;
+    this.sessionEnd = this.session.SessionEnd;
+
+    //alert(this.session.CheckInTimes.length);
+
+  }
+
+  getCheckInDetails(sessionCheckInTimeID) {
+
+    this.navCtrl.push(ScanPage, {
+      event: this.event,
+      sessionID: this.sessionID,
+      sessionCheckInTimeID: sessionCheckInTimeID
+    });
+
+    //let scanModal = this.modalCtrl.create(ScanPage);
+    //scanModal.present();
   }
 
 }
