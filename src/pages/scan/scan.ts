@@ -38,6 +38,7 @@ export class ScanPage {
   startTime: any;
   endTime: any;
   scannerDisabled: boolean = true;
+  isHiddenEmptyListMsg: boolean = true;
 
   constructor(
     public navCtrl: NavController
@@ -129,15 +130,17 @@ export class ScanPage {
     this.session = this.event.Sessions.find((obj) => {
       return obj.SessionID === this.sessionID;
     });
-
-    /*if (this.session.SessionAttendanceRecords) {
-      this.sessionAttendanceRecords = this.session.SessionAttendanceRecords;
-    }*/
-
+    
     if (this.session.SessionAttendanceRecordsDetailed) {
       this.sessionAttendanceRecordsDetailed = this.session.SessionAttendanceRecords.filter((obj) => {
         return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
       });
+    }
+
+    if (this.sessionAttendanceRecordsDetailed && this.sessionAttendanceRecordsDetailed.length > 0) {
+      this.isHiddenEmptyListMsg = true;
+    } else {
+      this.isHiddenEmptyListMsg = false;
     }
 
     this.attendeeList = this.session.SessionAttendees;

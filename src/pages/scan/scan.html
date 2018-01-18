@@ -55,8 +55,20 @@
     </p>
     -->
 
-    Attendance List:
-    <br />
+    <ion-item [hidden]="isHiddenEmptyListMsg" text-wrap>
+      <ion-label>
+        <ion-icon name="list" color="orange"></ion-icon>
+        There are no attendendees checked-in.
+      </ion-label>
+    </ion-item>
+
+    <ion-item [hidden]="!isHiddenEmptyListMsg" text-wrap>
+      <ion-label>
+        <ion-icon name="people" color="dark"></ion-icon>
+        Attendance List:
+      </ion-label>
+    </ion-item>
+    
     <br />
     <ion-list>
       <ion-item *ngFor="let attendanceRecord of sessionAttendanceRecordsDetailed" text-wrap>

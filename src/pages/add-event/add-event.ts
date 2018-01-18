@@ -14,6 +14,7 @@ import { LocalDataServiceProvider } from '../../providers/local-data-service/loc
 })
 export class AddEventPage {
 
+  isHiddenEmptyListMsg: boolean = true;
   isHiddenNetworkMsg: boolean = true;
   eventList: any;
 
@@ -39,7 +40,7 @@ export class AddEventPage {
     let env: string
 
     let loader = this.loadingCtrl.create({
-      content: "Please wait..."
+      content: "Please wait while we fetch the events..."
     });
     loader.present();
 
@@ -52,6 +53,13 @@ export class AddEventPage {
       this.eventService.getEvents(env).then((data) => {
         this.eventList = data;
         this.eventList = this.eventList.d; 
+
+        if (this.eventList && this.eventList.length > 0) {
+          this.isHiddenEmptyListMsg = true;
+        } else {
+          this.isHiddenEmptyListMsg = false;
+        }
+
         loader.dismiss();       
       }, (err) => {
         loader.dismiss(); 
