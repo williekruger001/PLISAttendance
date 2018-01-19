@@ -171,6 +171,7 @@ export class LoginPage {
 
       this.platform.ready().then(() => {
 
+        this.env = this.selEnvironment;
         //TO DO: Put the login page name into the PLIS database as parameter and initialise app with these values.
         let loginUrl: string = this.authenticatedUser.getEnvironment(this.env).url + "plisappauth.aspx";
 
