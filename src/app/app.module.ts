@@ -22,8 +22,6 @@ import { SQLite } from '@ionic-native/sqlite';
 
 import { QRScanner } from '@ionic-native/qr-scanner';
 
-import { FingerprintAIO } from '@ionic-native/fingerprint-aio';
-
 import { IonicStorageModule } from '@ionic/storage';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -74,8 +72,7 @@ import { LocalDataServiceProvider } from '../providers/local-data-service/local-
     SplashScreen,
     Network,
     SQLite,    
-    QRScanner,
-    FingerprintAIO,
+    QRScanner,    
     InAppBrowser,
     AppVersion,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
