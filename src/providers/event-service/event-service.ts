@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 import { Storage } from '@ionic/storage';
@@ -33,7 +33,11 @@ export class EventServiceProvider {
       this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
         .subscribe(data => {
           resolve(data);
-        }, (err) => {
+        }, (err: HttpErrorResponse) => {
+          console.log(err.message);
+          console.log(err.status);
+          console.log(err.statusText);
+          console.log(err.ok);
           reject(err.message);
         });
     });

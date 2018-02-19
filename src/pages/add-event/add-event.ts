@@ -44,6 +44,8 @@ export class AddEventPage {
     });
     loader.present();
 
+
+
     this.storage.get('_env').then((val) => {
       if (val) {
         env = val;
