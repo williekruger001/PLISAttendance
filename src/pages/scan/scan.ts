@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
 import moment from 'moment';
+import { Storage } from '@ionic/storage';
+import { EventServiceProvider } from '../../providers/event-service/event-service'
 
 
 @IonicPage()
@@ -31,7 +33,6 @@ export class ScanPage {
   sessionAttendanceRecords: any = [];
   sessionAttendanceRecordsDetailed: any = [];
   attendeeList: any = [];
-  EVENT_LIST_LOCAL: string = "_eventListLocal";
   timeOutToast: any = 2500;
   timeOutScanner: any = 1500;
   checkInDate: any;
@@ -46,7 +47,8 @@ export class ScanPage {
     , private qrScanner: QRScanner
     , public toastCtrl: ToastController
     , public localDataService: LocalDataServiceProvider
-    //, public moment: Moment
+    , public storage: Storage
+    , public eventService: EventServiceProvider
   ) {
 
     this.event = navParams.get("event");
@@ -59,7 +61,6 @@ export class ScanPage {
 
     this.setFields();
 
-
   }
 
   calculateStartAndEndDates() {
@@ -69,20 +70,22 @@ export class ScanPage {
     });
 
     let checkInTimeTolerance = this.session.CheckInTolerance;
-    let checkInTime = moment(checkInTimeObject.CheckInTime, 'DD/MM/YYYY hh:mm:ss A');
+    let checkInDateTime = moment(checkInTimeObject.CheckInTime, 'DD/MM/YYYY hh:mm:ss A');
 
-    this.startTime = moment(checkInTime).subtract(checkInTimeTolerance, 'm').format('hh:mm a');
-    this.endTime = moment(checkInTime).add(checkInTimeTolerance, 'm').format('hh:mm a');
-    this.checkInDate = moment(checkInTime).format('DD MMMM YYYY');
+    //alert("Tolerance: " + checkInTimeTolerance);
+
+    this.startTime = moment(checkInDateTime).subtract(checkInTimeTolerance, 'm').format('hh:mm a');
+    this.endTime = moment(checkInDateTime).add(checkInTimeTolerance, 'm').format('hh:mm a');
+    this.checkInDate = moment(checkInDateTime).format('DD MMMM YYYY');
 
     //TO DO Calculate the milliseconds until the check-in start and end
 
     let dateNow = moment();
-    let startDateTime = moment(checkInTime).subtract(checkInTimeTolerance, 'm');
-    let endDateTime = moment(checkInTime).add(checkInTimeTolerance, 'm');
+    let startDateTime = moment(checkInDateTime).subtract(checkInTimeTolerance, 'm');
+    let endDateTime = moment(checkInDateTime).add(checkInTimeTolerance, 'm');
 
-    if (dateNow < checkInTime) {
-
+    if (dateNow < startDateTime) {
+      //alert(dateNow + " - " + checkInTime);
       let startMilliseconds = moment
         .duration(moment(startDateTime)
           .diff(moment(dateNow)))
@@ -92,24 +95,26 @@ export class ScanPage {
         .duration(moment(endDateTime)
           .diff(moment(dateNow)))
         .asMilliseconds();
-      
+
       setTimeout(() => this.scannerDisabled = false, startMilliseconds);
       setTimeout(() => {
         this.scannerDisabled = true;
         this.closeScanner();
       }, endMilliseconds);
 
-    } else {
+    } else if (dateNow > startDateTime && dateNow < endDateTime) {
+
+      this.scannerDisabled = false;
 
       let endMilliseconds = moment
         .duration(moment(endDateTime)
           .diff(moment(dateNow)))
         .asMilliseconds();
 
-        setTimeout(() => {
-          this.scannerDisabled = true;
-          this.closeScanner();
-        }, endMilliseconds);
+      setTimeout(() => {
+        this.scannerDisabled = true;
+        this.closeScanner();
+      }, endMilliseconds);
     }
 
   }
@@ -130,12 +135,12 @@ export class ScanPage {
     this.session = this.event.Sessions.find((obj) => {
       return obj.SessionID === this.sessionID;
     });
-    
-    if (this.session.SessionAttendanceRecordsDetailed) {
-      this.sessionAttendanceRecordsDetailed = this.session.SessionAttendanceRecords.filter((obj) => {
-        return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
-      });
-    }
+
+    //if (this.session.SessionAttendanceRecordsDetailed) {
+    this.sessionAttendanceRecordsDetailed = this.session.SessionAttendanceRecords.filter((obj) => {
+      return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
+    });
+    //}
 
     if (this.sessionAttendanceRecordsDetailed && this.sessionAttendanceRecordsDetailed.length > 0) {
       this.isHiddenEmptyListMsg = true;

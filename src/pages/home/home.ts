@@ -4,6 +4,7 @@ import { Network } from '@ionic-native/network';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 import { Storage } from '@ionic/storage';
+//import { LoginPage } from '../login/login';
 
 @Component({
   selector: 'page-home',
@@ -44,7 +45,11 @@ export class HomePage {
 
       this.getOrganisations().then(
         (response) => {
-          this.selOrganisation = this.authenticatedUser.user.Org_Selected;
+          if (this.authenticatedUser.user.Org_Selected === 99999) {
+            this.selOrganisation = 0
+          } else {
+            this.selOrganisation = this.authenticatedUser.user.Org_Selected;
+          }          
         },
         (error) => {
           this.errorAlert(
@@ -72,6 +77,7 @@ export class HomePage {
     this.storage.remove(this.USER).then(() => {
       this.storage.remove(this.ENV_ARRAY).then(() => {
          this.platform.exitApp();
+         //this.navCtrl.push(LoginPage);
       });     
     });
   }

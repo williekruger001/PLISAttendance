@@ -53,6 +53,8 @@ export class LoginPage {
 
     //this.storage.remove("_eventListLocal");
 
+    //this.storage.clear();
+
     this.authenticatedUser.getEnvironments().then((response) => {
       this.envArray = this.authenticatedUser.envArray;
       this.processAuthentication();
@@ -68,7 +70,7 @@ export class LoginPage {
 
         if (val) {
 
-          if ((Date.now() - val) / (24 * 3600 * 1000) < 1) { //TO DO: Put the authentication age in the PLIOS database as a parameter for app initialisation
+          if ((Date.now() - val) / (24 * 3600 * 1000) < 1) { //TO DO: Put the authentication age in the PLIS database as a parameter for app initialisation
 
             resolve(true);
 
