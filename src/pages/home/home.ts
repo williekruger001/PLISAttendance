@@ -1,9 +1,23 @@
-import { Component } from '@angular/core';
-import { NavController, Platform, AlertController } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
-import { Storage } from '@ionic/storage';
+import {
+  Component
+} from '@angular/core';
+import {
+  NavController,
+  Platform,
+  AlertController
+} from 'ionic-angular';
+import {
+  Network
+} from '@ionic-native/network';
+import {
+  InAppBrowser
+} from '@ionic-native/in-app-browser';
+import {
+  AuthenticatedUserProvider
+} from '../../providers/authenticated-user/authenticated-user';
+import {
+  Storage
+} from '@ionic/storage';
 //import { LoginPage } from '../login/login';
 
 @Component({
@@ -49,7 +63,7 @@ export class HomePage {
             this.selOrganisation = 0
           } else {
             this.selOrganisation = this.authenticatedUser.user.Org_Selected;
-          }          
+          }
         },
         (error) => {
           this.errorAlert(
@@ -64,8 +78,8 @@ export class HomePage {
   getOrganisations() {
     return new Promise((resolve, reject) => {
       if (this.authenticatedUser.user.Partitions.length > 0) {
-        this.orgArray = this.authenticatedUser.user.Partitions;  
-        this.orgArray.sort((a, b) => a.OrgName.localeCompare(b.OrgName));      
+        this.orgArray = this.authenticatedUser.user.Partitions;
+        this.orgArray.sort((a, b) => a.OrgName.localeCompare(b.OrgName));
         resolve(this.orgArray);
       } else {
         reject(Error("There are no Partitions for the Authenticated user"));
@@ -76,9 +90,9 @@ export class HomePage {
   logout() {
     this.storage.remove(this.USER).then(() => {
       this.storage.remove(this.ENV_ARRAY).then(() => {
-         this.platform.exitApp();
-         //this.navCtrl.push(LoginPage);
-      });     
+        this.platform.exitApp();
+        //this.navCtrl.push(LoginPage);
+      });
     });
   }
 

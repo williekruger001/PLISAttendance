@@ -51,7 +51,7 @@ export class EventsPage {
       //Update the database with attendances
       this.updateAttendances();
       //Check if all attendances was uploaded
-      //Remove events that are older tha 7 days and all attendance set
+      //Remove events that are older than 7 days and all attendance set
     }
   }
 
@@ -108,11 +108,11 @@ export class EventsPage {
 
         //Check if the Event End Date is in the past
 
-        let eventEnd = moment(event.EventEnd);
-        let dateNow = moment();              
+        let eventEnd = moment(event.EventEnd, 'DD-MM-YYYY hh:mm a');
+        let dateNow = moment();   
 
         if (moment(eventEnd).isBefore(dateNow)) {
-
+         
           let noSyncCount: number = 0;
 
           event.Sessions.forEach(session => {
@@ -132,7 +132,9 @@ export class EventsPage {
 
             this.localDataService.addEventArchive(event);
 
-            this.eventListLocal.splice(eventIndex);           
+            this.eventListLocal.splice(eventIndex);  
+            
+            //this.eventListLocal.saveEventListLocal();
 
           }
 
