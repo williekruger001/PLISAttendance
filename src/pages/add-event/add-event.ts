@@ -72,6 +72,10 @@ export class AddEventPage {
 
   }
 
+  closeModal() {
+    this.viewCtrl.dismiss();
+  }
+
   addEvent(i: any) {
     this.localDataService.addEventLocal(this.eventList[i]);  
     this.viewCtrl.dismiss(); 

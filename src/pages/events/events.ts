@@ -156,8 +156,9 @@ export class EventsPage {
   }
 
   presentEventsModal() {
-    let eventModal = this.modalCtrl.create(AddEventPage);
-    eventModal.present();
+    //let eventModal = this.modalCtrl.create(AddEventPage);
+    //eventModal.present();
+    this.navCtrl.push(AddEventPage);
   }
 
   getSessionDetails(event, sessionID) {
