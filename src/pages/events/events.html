@@ -16,36 +16,59 @@
 <ion-content padding>
 
   <h3>Events ready for Attendance</h3>
-  <ion-item color="danger" text-wrap>Hint: Touch the Event tab again to sync attendances to the server.</ion-item>
+  <!--<ion-item color="danger" text-wrap>Hint: Touch the Event tab again to sync attendances to the server.</ion-item>
+  <button ion-button (click)='logout()' full outline>
+      <ion-icon name="sync"></ion-icon>Synchronise Attendances
+  </button>-->
 
   <ion-fab right bottom>
-    <button ion-fab small (click)='presentEventsModal()' [disabled]="isDisabledAddEvent">
+    <button ion-fab small (click)='presentEventsModal()' [disabled]="isDisabledAddEvent" color="danger">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
 
+  <ion-fab left bottom>
+    <button ion-fab small (click)='syncAttendance()' [disabled]="isDisabledAddEvent" color="green">
+      <ion-icon name="sync"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <!--<ion-item [hidden]="isHiddenEmptyListMsg" text-wrap>
+    <ion-label>
+      <ion-icon name="list" color="orange"></ion-icon>
+      There are no events setup for attendance.
+    </ion-label>
+  </ion-item>-->
+
   <ion-list no-padding>
+    <ion-item-sliding *ngFor="let event of eventListLocal; let i = index">
+      <ion-item text-wrap>
+        <strong>
+          <ion-icon name="calendar" color="orange"></ion-icon>
+          {{event.EventName}}</strong>
+        <br /> ID: {{event.EventID}}
+        <br /> Start: {{event.EventStart}}
+        <br /> End: {{event.EventEnd}}
 
-    <ion-item *ngFor="let event of eventListLocal; let i = index" text-wrap>
-      <ion-icon name="calendar" color="orange"></ion-icon>
-      {{event.EventName}}
-      <br /> ID: {{event.EventID}}
-      <br /> Start: {{event.EventStart}}
-      <br /> End: {{event.EventEnd}}
-      <br /> Sessions:
-      <ion-list no-padding>
-        <button ion-item *ngFor="let session of event.Sessions" text-wrap (click)="getSessionDetails(event, session.SessionID)">
-          <ion-icon name="briefcase" color="green"></ion-icon>
-          {{session.SessionName}} 
-          <br /> ID: {{session.SessionID}}
-          <br /> Start: {{session.SessionStart}}
-          <br /> End: {{session.SessionEnd}}
+        <ion-list no-padding>
+          <button ion-item *ngFor="let session of event.Sessions" text-wrap (click)="getSessionDetails(event, session.SessionID)">
+            <strong>
+              <ion-icon name="briefcase" color="green"></ion-icon>
+              {{session.SessionName}}</strong>
+            <br /> ID: {{session.SessionID}}
+            <br /> Start: {{session.SessionStart}}
+            <br /> End: {{session.SessionEnd}}
+            <br /> Registration Count: {{session.SessionAttendees.length}}
+          </button>
+        </ion-list>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="danger" (click)="refreshEventDetails(i)">
+          <ion-icon name="trash"></ion-icon>
+          Remove
         </button>
-      </ion-list>
-
-    </ion-item>
-
-
+      </ion-item-options>
+    </ion-item-sliding>
 
   </ion-list>
 

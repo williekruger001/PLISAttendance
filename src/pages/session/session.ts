@@ -20,6 +20,7 @@ export class SessionPage {
   sessionStart: string;
   sessionEnd: string;
   checkInTimes: any;
+  sessionRegistrationCount: number;
 
   constructor(
     public navCtrl: NavController
@@ -51,6 +52,7 @@ export class SessionPage {
     this.sessionName = this.session.SessionName;
     this.sessionStart = this.session.SessionStart;
     this.sessionEnd = this.session.SessionEnd;
+    this.sessionRegistrationCount = this.session.SessionAttendees.length;
 
     //alert(this.session.CheckInTimes.length);
 

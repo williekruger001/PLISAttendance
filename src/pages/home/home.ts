@@ -18,7 +18,7 @@ import {
 import {
   Storage
 } from '@ionic/storage';
-//import { LoginPage } from '../login/login';
+import { LoginPage } from '../login/login';
 
 
 @Component({
@@ -91,8 +91,8 @@ export class HomePage {
   logout() {
     this.storage.remove(this.USER).then(() => {
       this.storage.remove(this.ENV_ARRAY).then(() => {
-        this.platform.exitApp();
-        //this.navCtrl.push(LoginPage);
+        this.navCtrl.push(LoginPage);
+        //this.platform.exitApp();        
       });
     });
   }

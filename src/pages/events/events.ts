@@ -17,6 +17,7 @@ import moment from 'moment';
 })
 export class EventsPage {
 
+  isHiddenEmptyListMsg: boolean = true;
   isDisabledAddEvent: boolean = true;
   eventListLocal: any;
 
@@ -34,15 +35,6 @@ export class EventsPage {
 
   }
 
-  ionSelected() {
-    if (this.checkNetwork()) {
-      //Update the database with attendances
-      this.updateAttendances();
-      //Check if all attendances was uploaded
-      //Remove events that are older tha 7 days and all attendance set
-    }
-  }
-
   ionViewDidLoad() {
 
     this.getEventListLocal();
@@ -53,6 +45,21 @@ export class EventsPage {
       //Check if all attendances was uploaded
       //Remove events that are older than 7 days and all attendance set
     }
+  }
+
+  syncAttendance() {
+    if (this.checkNetwork()) {
+      this.updateAttendances();
+    }
+  }
+
+  refreshEventDetails(index) {
+    if (this.checkNetwork()) {
+      this.updateAttendances();      
+      this.localDataService.removeEventLocal(index);
+      this.getEventListLocal();
+    }
+
   }
 
   updateAttendances() {
@@ -74,10 +81,16 @@ export class EventsPage {
 
       //Loop throught event list and attendance records and update details
 
+      //alert(this.eventListLocal.length);
+
       this.eventListLocal.forEach(event => {
+
+        //alert(event.Sessions.length);
 
         event.Sessions.forEach(session => {
 
+          //alert(session.SessionAttendanceRecords.length);
+          //alert(this.authenticatedUser.user.UserID);
           session.SessionAttendanceRecords.forEach(attendanceRecord => {
 
             this.eventService.updateAttendance(attendanceRecord, env, session.SessionID, this.authenticatedUser.user.UserID).then((data) => {
@@ -109,10 +122,10 @@ export class EventsPage {
         //Check if the Event End Date is in the past
 
         let eventEnd = moment(event.EventEnd, 'DD-MM-YYYY hh:mm a');
-        let dateNow = moment();   
+        let dateNow = moment();
 
         if (moment(eventEnd).isBefore(dateNow)) {
-         
+
           let noSyncCount: number = 0;
 
           event.Sessions.forEach(session => {
@@ -132,8 +145,8 @@ export class EventsPage {
 
             this.localDataService.addEventArchive(event);
 
-            this.eventListLocal.splice(eventIndex);  
-            
+            this.eventListLocal.splice(eventIndex);
+
             //this.eventListLocal.saveEventListLocal();
 
           }
@@ -156,8 +169,6 @@ export class EventsPage {
   }
 
   presentEventsModal() {
-    //let eventModal = this.modalCtrl.create(AddEventPage);
-    //eventModal.present();
     this.navCtrl.push(AddEventPage);
   }
 

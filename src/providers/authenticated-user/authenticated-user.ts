@@ -20,9 +20,11 @@ export class AuthenticatedUserProvider {
 
       this.storage.get(this.ENV_ARRAY).then((val) => {
         if (val) {
+          this.envArray = [];
           this.envArray = val;
           resolve(this.envArray);
         } else {
+          this.envArray = [];
           //TO DO: Put these parameters in the PLIS database for initialisation of app and default restore
           this.envArray.push({ name: 'Production', value: 'prod', url: 'https://plis-admin.det.wa.edu.au/webapi/' });
           this.envArray.push({ name: 'Training', value: 'train', url: 'https://plis-admin-training.det.wa.edu.au/webapi/' });

@@ -12,8 +12,8 @@
     Check-In Time/s
   </h2>
   <p>
-    <ion-icon name="calendar" color="orange"></ion-icon>
-    {{eventName}} 
+    <strong><ion-icon name="calendar" color="orange"></ion-icon>
+    {{eventName}}</strong>
     <br />Event ID: {{eventID}}
     <br />Event Start: {{eventStart}}
     <br /> Event End: {{eventEnd}}
@@ -21,11 +21,12 @@
 
   
   <p indent>
-    <ion-icon name="briefcase" color="green"></ion-icon>
-    {{sessionName}} 
+    <strong><ion-icon name="briefcase" color="green"></ion-icon>
+    {{sessionName}}</strong> 
     <br />Session ID: {{sessionID}}
     <br />Session Start: {{sessionStart}}
     <br />Session End: {{sessionEnd}}
+    <br />Registration Count: {{sessionRegistrationCount}}
   </p>
 
   
@@ -34,8 +35,8 @@
   <br />
   <ion-list>
     <button ion-item *ngFor="let checkIn of checkInTimes" text-wrap (click)="getCheckInDetails(checkIn.SessionCheckInTimeID)">
-      <ion-icon name="barcode" color="green"></ion-icon>
-      {{checkIn.CheckInTime}}
+      <strong><ion-icon name="barcode" color="green"></ion-icon>
+      {{checkIn.CheckInTime}}</strong>
     </button>
   </ion-list>
 </ion-content>

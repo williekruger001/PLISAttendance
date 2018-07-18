@@ -36,6 +36,22 @@ export class LocalDataServiceProvider {
 
   }
 
+  removeEventLocal(index) {
+    let env: string = "";
+
+    this.storage.get('_env').then((val) => {
+      if (val) {
+        env = val;
+      } else {
+        env = "prod"
+      }
+
+      this.eventListLocal.splice(index, 1);
+      this.storage.set(this.EVENT_LIST_LOCAL + env, this.eventListLocal);
+
+    });
+  }
+
   addEventLocal(event: any) {
 
     let env: string = "";

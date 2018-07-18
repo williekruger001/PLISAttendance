@@ -54,12 +54,14 @@ export class LoginPage {
     //this.storage.remove("_eventListLocal");
 
     //this.storage.clear();
-
-    this.authenticatedUser.getEnvironments().then((response) => {
+    
+    this.authenticatedUser.getEnvironments().then((response) => {  
+      //alert("env before: " + this.envArray.length)   
       this.envArray = this.authenticatedUser.envArray;
+      //alert("env after: " + this.envArray.length)
       this.processAuthentication();
     });
-
+    
   }
 
   getAuthAge() { //Return a Promise
@@ -116,6 +118,10 @@ export class LoginPage {
         this.storage.get(this.USER).then((val) => {
           if (val) {
             this.authenticatedUser.user = val;
+
+            if (this.authenticatedUser.user.Org_Selected == 99999) {
+              this.authenticatedUser.user.Org_Selected = 0;
+            }
 
             if (this.bypassLogin == true) {
               if (this.authenticatedUser.user) {
@@ -191,6 +197,11 @@ export class LoginPage {
               this.storage.set(this.USER, this.authenticatedUser.user);
               this.storage.set(this.AUTH_TIME, Date.now());
               ref.close();
+
+              if (this.authenticatedUser.user.Org_Selected == 99999) {
+                this.authenticatedUser.user.Org_Selected = 0;
+              }
+
               resolve(this.authenticatedUser.user);
 
             } else {
@@ -228,6 +239,11 @@ export class LoginPage {
             if (response == true) {
               //Set the singleton for the user
               this.authenticatedUser.user = val;
+
+              if (this.authenticatedUser.user.Org_Selected == 99999) {
+                this.authenticatedUser.user.Org_Selected = 0;
+              }
+
               this.saveAuthentication();
               //Navigate to landing page
               this.localDataService.getEventListLocal();

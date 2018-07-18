@@ -196,12 +196,14 @@ export class ScanPage {
         let attendanceRecord: any = {
           SessionAttendanceID: 0,
           SessionCheckInTimeID: this.sessionCheckInTimeID,
-          CheckInTime: new Date(),
+          CheckInTime: moment.utc().format(),
           CheckInTimeDisplay: new Date().toLocaleTimeString(),
           PersonID: personID,
           FullName: attendee.FullName,
           StaffNumber: attendee.StaffNumber
         }
+
+        //alert(attendanceRecord.CheckInTime);
 
         this.sessionAttendanceRecordsDetailed.push(attendanceRecord);
         this.presentToast('Welcome ' + attendee.FullName + ' (' + attendee.StaffNumber + '). Your check-in was successful!')
