@@ -4,8 +4,7 @@ import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
 import moment from 'moment';
 import { Storage } from '@ionic/storage';
-import { EventServiceProvider } from '../../providers/event-service/event-service'
-
+import { EventServiceProvider } from '../../providers/event-service/event-service';
 
 @IonicPage()
 @Component({
@@ -48,7 +47,7 @@ export class ScanPage {
     , public toastCtrl: ToastController
     , public localDataService: LocalDataServiceProvider
     , public storage: Storage
-    , public eventService: EventServiceProvider
+    , public eventService: EventServiceProvider    
   ) {
 
     this.event = navParams.get("event");
@@ -227,7 +226,6 @@ export class ScanPage {
   }
 
   startQRScanner() {
-
     
     this.qrScanner.prepare()
       .then((status: QRScannerStatus) => {
@@ -299,11 +297,13 @@ export class ScanPage {
       if (qrStatus.showing) {
         this.qrScanner.hide();
         this.scanSub.unsubscribe();
-        this.closeIcon = "barcode";
-        this.closeIconColor = "green";
-        window.document.querySelector('ion-app').classList.remove('transparent-body');
-        window.document.getElementById('divDetails').classList.remove('hide');
-        window.document.getElementById('divScanner').classList.add('hide');
+        this.qrScanner.destroy().then(status => {
+          this.closeIcon = "barcode";
+          this.closeIconColor = "green";
+          window.document.querySelector('ion-app').classList.remove('transparent-body');
+          window.document.getElementById('divDetails').classList.remove('hide');
+          window.document.getElementById('divScanner').classList.add('hide');
+        });        
       } else {
         this.startQRScanner();
         this.closeIcon = "close";
