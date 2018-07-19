@@ -228,6 +228,7 @@ export class ScanPage {
 
   startQRScanner() {
 
+    
     this.qrScanner.prepare()
       .then((status: QRScannerStatus) => {
         if (status.authorized) {
@@ -235,6 +236,9 @@ export class ScanPage {
 
           // start scanning
           this.scanSub = this.qrScanner.scan().subscribe((text: string) => {
+
+            var audio = new Audio('assets/audio/beep.mp3');
+            audio.play();
 
             this.processAttendance(text);
 
