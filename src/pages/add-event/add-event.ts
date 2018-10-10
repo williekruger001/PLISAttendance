@@ -54,7 +54,7 @@ export class AddEventPage {
       }
       this.eventService.getEvents(env).then((data) => {
         this.eventList = data;
-        this.eventList = this.eventList.d; 
+        this.eventList = this.eventList.d;
 
         if (this.eventList && this.eventList.length > 0) {
           this.isHiddenEmptyListMsg = true;
@@ -62,9 +62,9 @@ export class AddEventPage {
           this.isHiddenEmptyListMsg = false;
         }
 
-        loader.dismiss();       
+        loader.dismiss();
       }, (err) => {
-        loader.dismiss(); 
+        loader.dismiss();
         alert(err);
       });
 
@@ -77,8 +77,8 @@ export class AddEventPage {
   }
 
   addEvent(i: any) {
-    this.localDataService.addEventLocal(this.eventList[i]);  
-    this.viewCtrl.dismiss(); 
+    this.localDataService.addEventLocal(this.eventList[i]);
+    this.viewCtrl.dismiss();
   }
 
   checkNetwork() {

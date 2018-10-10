@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 
@@ -11,7 +12,8 @@ export class AuthenticatedUserProvider {
   envArray: any = [];
 
   constructor(
-    public storage: Storage
+    public storage: Storage,
+    public httpClient: HttpClient
   ) { }
 
   getEnvironments() {
@@ -39,6 +41,33 @@ export class AuthenticatedUserProvider {
   getEnvironment(env) {
     let result: any = this.envArray.filter((o) => { return o.value == env; });
     return result ? result[0] : null;
+  }
+
+  getUser(userid, env) {
+
+    let headers = new HttpHeaders();
+    headers.append('content-type', 'application/json; charset=utf-8');
+    
+    let body = {
+      _userID: userid
+    };
+
+    let baseUrl: string = this.getEnvironment(env).url; //'https://plis-admin-test.det.wa.edu.au/webapi/'
+    let apiMethod: string = 'PLISAppEvents.asmx/GetUser';
+
+    return new Promise((resolve, reject) => {
+      this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
+        .subscribe(data => {          
+          resolve(data);
+        }, (err: HttpErrorResponse) => {
+          console.log(err.message);
+          console.log(err.status);
+          console.log(err.statusText);
+          console.log(err.ok);
+          reject(err.message);
+        });
+    });
+
   }
 
 }

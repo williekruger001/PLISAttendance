@@ -54,14 +54,14 @@ export class LoginPage {
     //this.storage.remove("_eventListLocal");
 
     //this.storage.clear();
-    
-    this.authenticatedUser.getEnvironments().then((response) => {  
+
+    this.authenticatedUser.getEnvironments().then((response) => {
       //alert("env before: " + this.envArray.length)   
       this.envArray = this.authenticatedUser.envArray;
       //alert("env after: " + this.envArray.length)
       this.processAuthentication();
     });
-    
+
   }
 
   getAuthAge() { //Return a Promise
@@ -189,28 +189,35 @@ export class LoginPage {
 
           ref.executeScript({ code: 'getAuthenticationInfo();' }, (data) => {
 
-            if (data[0] != null) {
+            if (data[0] != null) {              
 
+              let userid: string = JSON.parse(data[0]).UserID;
 
-              //Turn the JSON data into an Authenticated user object
-              this.authenticatedUser.user = JSON.parse(data[0]);
-              this.storage.set(this.USER, this.authenticatedUser.user);
-              this.storage.set(this.AUTH_TIME, Date.now());
-              ref.close();
+              this.authenticatedUser.getUser(userid, this.selEnvironment).then((data) => {
 
-              if (this.authenticatedUser.user.Org_Selected == 99999) {
-                this.authenticatedUser.user.Org_Selected = 0;
-              }
+                let userObject: any = data;
+                
+                this.authenticatedUser.user = userObject.d;                
 
-              resolve(this.authenticatedUser.user);
+                this.storage.set(this.USER, this.authenticatedUser.user);
+                this.storage.set(this.AUTH_TIME, Date.now());
+                ref.close();
+
+                if (this.authenticatedUser.user.Org_Selected == 99999) {
+                  this.authenticatedUser.user.Org_Selected = 0;
+                }
+  
+                resolve(this.authenticatedUser.user);
+
+              })
 
             } else {
-
               reject('No data returned!');
+            }            
 
-            }
-
-          });
+          }).catch((e) => {
+            alert(e);
+          });          
 
         });
 
@@ -229,8 +236,7 @@ export class LoginPage {
 
   doLogin() {
 
-    // 1. Check if there is an authenticated user in the data store
-
+    // 1. Check if there is an authenticated user in the data store   
     this.storage.get(this.USER).then((val) => {
       if (val) { //There is an authenticated user in the data store        
         //Get the auth age

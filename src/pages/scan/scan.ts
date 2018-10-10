@@ -5,6 +5,7 @@ import { LocalDataServiceProvider } from '../../providers/local-data-service/loc
 import moment from 'moment';
 import { Storage } from '@ionic/storage';
 import { EventServiceProvider } from '../../providers/event-service/event-service';
+import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 
 @IonicPage()
 @Component({
@@ -32,8 +33,8 @@ export class ScanPage {
   sessionAttendanceRecords: any = [];
   sessionAttendanceRecordsDetailed: any = [];
   attendeeList: any = [];
-  timeOutToast: any = 2500;
-  timeOutScanner: any = 1500;
+  timeOutToast: any = 4000;
+  timeOutScanner: any = 3500;
   checkInDate: any;
   startTime: any;
   endTime: any;
@@ -47,7 +48,8 @@ export class ScanPage {
     , public toastCtrl: ToastController
     , public localDataService: LocalDataServiceProvider
     , public storage: Storage
-    , public eventService: EventServiceProvider    
+    , public eventService: EventServiceProvider
+    , public authenticatedUser: AuthenticatedUserProvider
   ) {
 
     this.event = navParams.get("event");
@@ -134,12 +136,15 @@ export class ScanPage {
     this.session = this.event.Sessions.find((obj) => {
       return obj.SessionID === this.sessionID;
     });
-
-    //if (this.session.SessionAttendanceRecordsDetailed) {
+    
     this.sessionAttendanceRecordsDetailed = this.session.SessionAttendanceRecords.filter((obj) => {
       return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
     });
-    //}
+    
+    //TODO: Add registrants to list that is not checked in
+    
+
+    this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
 
     if (this.sessionAttendanceRecordsDetailed && this.sessionAttendanceRecordsDetailed.length > 0) {
       this.isHiddenEmptyListMsg = true;
@@ -207,10 +212,55 @@ export class ScanPage {
         this.sessionAttendanceRecordsDetailed.push(attendanceRecord);
         this.presentToast('Welcome ' + attendee.FullName + ' (' + attendee.StaffNumber + '). Your check-in was successful!')
 
+        this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
+
         eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecords.push(attendanceRecord);
         eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecordsDetailed = this.sessionAttendanceRecordsDetailed;
 
+        //Update database here
+
+        let env: string       
+
+        this.storage.get('_env').then((val) => {
+          if (val) {
+            env = val;
+          } else {
+            env = "prod"
+          }
+          eventsList.forEach(event => {
+
+            //alert(event.Sessions.length);
+
+            event.Sessions.forEach(session => {
+
+              //alert(session.SessionAttendanceRecords.length);
+              //alert(this.authenticatedUser.user.UserID);
+              session.SessionAttendanceRecords.forEach(attendanceRecord => {
+
+                this.eventService.updateAttendance(attendanceRecord, env, session.SessionID, this.authenticatedUser.user.UserID).then((data) => {
+                  let sessionAttendance: any;
+                  sessionAttendance = data;
+                  sessionAttendance = sessionAttendance.d;
+
+                  if (sessionAttendance.Key != 0) {
+                    attendanceRecord.SessionAttendanceID = sessionAttendance.Key;
+                  }
+
+                  this.localDataService.saveEventListLocal(eventsList);
+
+                }, (err) => {
+                  //alert(err);
+                });
+
+              });
+
+            });
+
+          });
+        });
+
         this.localDataService.saveEventListLocal(eventsList);
+        this.setFields();
 
       } else {
         this.presentToast('This person is not registered in this session! Please contact the administrator.')
@@ -226,7 +276,7 @@ export class ScanPage {
   }
 
   startQRScanner() {
-    
+
     this.qrScanner.prepare()
       .then((status: QRScannerStatus) => {
         if (status.authorized) {
@@ -303,7 +353,7 @@ export class ScanPage {
           window.document.querySelector('ion-app').classList.remove('transparent-body');
           window.document.getElementById('divDetails').classList.remove('hide');
           window.document.getElementById('divScanner').classList.add('hide');
-        });        
+        });
       } else {
         this.startQRScanner();
         this.closeIcon = "close";

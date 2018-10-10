@@ -16,14 +16,14 @@
 
 
 
-  <ion-fab left bottom small>
-    <button ion-fab color="dark" (click)="toggleCamera()" [disabled]='scannerDisabled'>
+  <ion-fab right top>
+    <button ion-fab mini color="primary" (click)="toggleCamera()" [disabled]='scannerDisabled'>
       <ion-icon name="reverse-camera"></ion-icon>
     </button>
   </ion-fab>
 
-  <ion-fab right bottom small>
-    <button ion-fab color="dark" (click)="toggleView()" [disabled]='scannerDisabled'>
+  <ion-fab center bottom>
+    <button ion-fab color="orange" (click)="toggleView()" [disabled]='scannerDisabled'>
       <ion-icon [name]="closeIcon" [color]="closeIconColor"></ion-icon>
     </button>
   </ion-fab>
