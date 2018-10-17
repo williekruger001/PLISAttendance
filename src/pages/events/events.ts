@@ -7,6 +7,7 @@ import { SessionPage } from '../session/session'
 import { Storage } from '@ionic/storage';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 import { EventServiceProvider } from '../../providers/event-service/event-service'
+import { LoginPage } from '../login/login';
 import moment from 'moment';
 
 
@@ -16,6 +17,9 @@ import moment from 'moment';
   templateUrl: 'events.html',
 })
 export class EventsPage {
+
+  USER: string = '_user';
+  ENV_ARRAY: string = '_envArray';
 
   isHiddenEmptyListMsg: boolean = true;
   isDisabledAddEvent: boolean = true;
@@ -107,6 +111,7 @@ export class EventsPage {
             }, (err) => {
               loader.dismiss();
               alert(err);
+              this.logout();
             });
 
           });
@@ -176,6 +181,15 @@ export class EventsPage {
     this.navCtrl.push(SessionPage, {
       event: event,
       sessionID: sessionID
+    });
+  }
+
+  logout() {
+    this.storage.remove(this.USER).then(() => {
+      this.storage.remove(this.ENV_ARRAY).then(() => {
+        this.navCtrl.push(LoginPage);
+        //this.platform.exitApp();        
+      });
     });
   }
 

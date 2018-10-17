@@ -7,8 +7,6 @@ import { Storage } from '@ionic/storage';
 @Injectable()
 export class EventServiceProvider {
 
-
-
   constructor(
     public httpClient: HttpClient
     , public authenticatedUser: AuthenticatedUserProvider
@@ -18,8 +16,10 @@ export class EventServiceProvider {
 
   getEvents(env) {
 
-    let headers = new HttpHeaders();
-    headers.append('content-type', 'application/json; charset=utf-8');
+    let headers = new HttpHeaders()
+      .set('content-type', 'application/json; charset=utf-8')
+      .set('staffNumber', this.authenticatedUser.user.UserID)
+      .set('token', this.authenticatedUser.user.Token);   
 
     if (this.authenticatedUser.user.Org_Selected == 99999) {
       this.authenticatedUser.user.Org_Selected = 0;
@@ -38,12 +38,8 @@ export class EventServiceProvider {
       this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
         .subscribe(data => {
           resolve(data);
-        }, (err: HttpErrorResponse) => {
-          console.log(err.message);
-          console.log(err.status);
-          console.log(err.statusText);
-          console.log(err.ok);
-          reject(err.message);
+        }, (err: HttpErrorResponse) => {          
+          reject('Status code: ' + err.status + ' - ' + err.statusText);
         });
     });
 
@@ -51,14 +47,10 @@ export class EventServiceProvider {
 
   updateAttendance(attendeeRecord: any, env: string, sessionID: any, lastUpdatedBy: string) {
 
-    let headers = new HttpHeaders();
-    headers.append('content-type', 'application/json; charset=utf-8');
-
-    //alert("sessionCheckInTimeID: " + attendeeRecord.SessionCheckInTimeID);
-    //alert("checkInTime: " + attendeeRecord.CheckInTime);
-    //alert("personID: " + attendeeRecord.PersonID);
-    //alert("sessionID: " + sessionID);
-    //alert("lastUpdatedBy: " + lastUpdatedBy);
+    let headers = new HttpHeaders()
+      .set('content-type', 'application/json; charset=utf-8')
+      .set('staffNumber', this.authenticatedUser.user.UserID)
+      .set('token', this.authenticatedUser.user.Token);    
 
     let body = {
       _sessionCheckInTimeID: attendeeRecord.SessionCheckInTimeID,
@@ -77,12 +69,8 @@ export class EventServiceProvider {
       this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
         .subscribe(data => {
           resolve(data);
-        }, (err: HttpErrorResponse) => {
-          console.log(err.message);
-          console.log(err.status);
-          console.log(err.statusText);
-          console.log(err.ok);
-          reject(err.message);
+        }, (err: HttpErrorResponse) => {          
+          reject('Status code: ' + err.status + ' - ' + err.statusText);
         });
     });
 

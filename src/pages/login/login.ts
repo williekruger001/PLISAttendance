@@ -192,24 +192,31 @@ export class LoginPage {
             if (data[0] != null) {              
 
               let userid: string = JSON.parse(data[0]).UserID;
+              let token: string = JSON.parse(data[0]).Token;
 
-              this.authenticatedUser.getUser(userid, this.selEnvironment).then((data) => {
+              //alert(token);
+
+              this.authenticatedUser.getUser(userid, this.selEnvironment, token).then((data) => {
 
                 let userObject: any = data;
                 
-                this.authenticatedUser.user = userObject.d;                
-
-                this.storage.set(this.USER, this.authenticatedUser.user);
-                this.storage.set(this.AUTH_TIME, Date.now());
-                ref.close();
-
-                if (this.authenticatedUser.user.Org_Selected == 99999) {
-                  this.authenticatedUser.user.Org_Selected = 0;
-                }
+                  this.authenticatedUser.user = userObject.d;  
+                  this.authenticatedUser.user.Token = token;              
   
-                resolve(this.authenticatedUser.user);
-
-              })
+                  this.storage.set(this.USER, this.authenticatedUser.user);
+                  this.storage.set(this.AUTH_TIME, Date.now());
+                  ref.close();
+  
+                  if (this.authenticatedUser.user.Org_Selected == 99999) {
+                    this.authenticatedUser.user.Org_Selected = 0;
+                  }
+    
+                  resolve(this.authenticatedUser.user);                       
+                
+              }, (err) => {
+                ref.close();
+                reject(err)                
+              });
 
             } else {
               reject('No data returned!');
@@ -277,7 +284,7 @@ export class LoginPage {
             (error) => {
               this.errorAlert(
                 'Authentication issue.',
-                'There was a problem with the authentication process. Please try again.'
+                error
               );
 
             });

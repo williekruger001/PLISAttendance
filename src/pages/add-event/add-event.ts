@@ -4,6 +4,8 @@ import { Network } from '@ionic-native/network';
 import { EventServiceProvider } from '../../providers/event-service/event-service'
 import { Storage } from '@ionic/storage';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
+import { LoginPage } from '../login/login';
+import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 
 
 @IonicPage()
@@ -13,6 +15,9 @@ import { LocalDataServiceProvider } from '../../providers/local-data-service/loc
 
 })
 export class AddEventPage {
+
+  USER: string = '_user';
+  ENV_ARRAY: string = '_envArray';
 
   isHiddenEmptyListMsg: boolean = true;
   isHiddenNetworkMsg: boolean = true;
@@ -27,6 +32,7 @@ export class AddEventPage {
     , public localDataService: LocalDataServiceProvider
     , public viewCtrl: ViewController
     , public loadingCtrl: LoadingController
+    , public authenticatedUser: AuthenticatedUserProvider,
   ) { }
 
   ionViewDidLoad() {
@@ -44,8 +50,6 @@ export class AddEventPage {
     });
     loader.present();
 
-
-
     this.storage.get('_env').then((val) => {
       if (val) {
         env = val;
@@ -55,21 +59,31 @@ export class AddEventPage {
       this.eventService.getEvents(env).then((data) => {
         this.eventList = data;
         this.eventList = this.eventList.d;
-
-        if (this.eventList && this.eventList.length > 0) {
-          this.isHiddenEmptyListMsg = true;
-        } else {
-          this.isHiddenEmptyListMsg = false;
-        }
-
+      
+          if (this.eventList && this.eventList.length > 0) {
+            this.isHiddenEmptyListMsg = true;
+          } else {
+            this.isHiddenEmptyListMsg = false;
+          }
+       
         loader.dismiss();
       }, (err) => {
         loader.dismiss();
         alert(err);
+        this.logout();
       });
 
     });
 
+  }
+
+  logout() {
+    this.storage.remove(this.USER).then(() => {
+      this.storage.remove(this.ENV_ARRAY).then(() => {
+        this.navCtrl.push(LoginPage);
+        //this.platform.exitApp();        
+      });
+    });
   }
 
   closeModal() {

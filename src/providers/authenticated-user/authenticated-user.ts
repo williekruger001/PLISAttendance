@@ -43,10 +43,12 @@ export class AuthenticatedUserProvider {
     return result ? result[0] : null;
   }
 
-  getUser(userid, env) {
+  getUser(userid, env, token) {
 
-    let headers = new HttpHeaders();
-    headers.append('content-type', 'application/json; charset=utf-8');
+    let headers = new HttpHeaders()
+      .set('content-type', 'application/json; charset=utf-8')
+      .set('staffNumber', userid)
+      .set('token', token);    
     
     let body = {
       _userID: userid
@@ -59,12 +61,8 @@ export class AuthenticatedUserProvider {
       this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
         .subscribe(data => {          
           resolve(data);
-        }, (err: HttpErrorResponse) => {
-          console.log(err.message);
-          console.log(err.status);
-          console.log(err.statusText);
-          console.log(err.ok);
-          reject(err.message);
+        }, (err: HttpErrorResponse) => {          
+          reject('Status code: ' + err.status + ' - ' + err.statusText);
         });
     });
 
