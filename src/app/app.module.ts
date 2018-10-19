@@ -22,7 +22,7 @@ import { SQLite } from '@ionic-native/sqlite';
 
 import { QRScanner } from '@ionic-native/qr-scanner';
 
-import { IonicStorageModule } from '@ionic/storage';
+//import { IonicStorageModule } from '@ionic/storage';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
@@ -31,6 +31,11 @@ import { AuthenticatedUserProvider } from '../providers/authenticated-user/authe
 import { EventServiceProvider } from '../providers/event-service/event-service';
 import { HttpClientModule } from '@angular/common/http';
 import { LocalDataServiceProvider } from '../providers/local-data-service/local-data-service';
+import { GLSecureStorageProvider } from 'gl-ionic2-secure-storage/dist/src';
+import { GLSecureStorageConfigProvider } from 'gl-ionic2-secure-storage/dist/src';
+import { MySecureStorageConfigProvider } from '../app/secure-storage-config-provider';
+import { GlIonic2SecureStorageModule } from 'gl-ionic2-secure-storage/dist/src';
+
 
 
 @NgModule({
@@ -48,11 +53,12 @@ import { LocalDataServiceProvider } from '../providers/local-data-service/local-
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,
-    IonicModule.forRoot(MyApp),
-    IonicStorageModule.forRoot({
+    HttpClientModule, 
+    GlIonic2SecureStorageModule.forRoot(),   
+    IonicModule.forRoot(MyApp)
+    /* IonicStorageModule.forRoot({
       name: '_plisDB'
-    })
+    }) */
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -78,7 +84,9 @@ import { LocalDataServiceProvider } from '../providers/local-data-service/local-
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthenticatedUserProvider,
     EventServiceProvider,
-    LocalDataServiceProvider
+    LocalDataServiceProvider,
+    GLSecureStorageProvider,
+    {provide: GLSecureStorageConfigProvider, useClass: MySecureStorageConfigProvider }   
   ]
 })
 export class AppModule {}

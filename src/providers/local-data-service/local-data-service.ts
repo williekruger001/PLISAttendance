@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import moment from 'moment';
-
+import {GLSecureStorageProvider} from "gl-ionic2-secure-storage/dist/src";
 
 @Injectable()
 export class LocalDataServiceProvider {
@@ -12,43 +11,40 @@ export class LocalDataServiceProvider {
   eventListArchive: any = [];
 
   constructor(
-    public storage: Storage
+    private glSecureStorage: GLSecureStorageProvider
   ) { }
 
   getEventListLocal() {
 
     let env: string = "";
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
 
-      this.storage.get(this.EVENT_LIST_LOCAL + env).then((val) => {
-        if (val) {
-          this.eventListLocal = val;
+      this.glSecureStorage.get(this.EVENT_LIST_LOCAL + env).then((val) => {
+        if (val) {          
+          this.eventListLocal = JSON.parse(val);
         }
       });
-
     });
-
   }
 
   removeEventLocal(index) {
     let env: string = "";
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
 
       this.eventListLocal.splice(index, 1);
-      this.storage.set(this.EVENT_LIST_LOCAL + env, this.eventListLocal);
-
+      this.glSecureStorage.set(this.EVENT_LIST_LOCAL + env, JSON.stringify(this.eventListLocal));
     });
   }
 
@@ -56,9 +52,9 @@ export class LocalDataServiceProvider {
 
     let env: string = "";
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
@@ -74,30 +70,24 @@ export class LocalDataServiceProvider {
         //First update any CheckIn times with moment
 
         event.Sessions.forEach(session => {
-
           session.SessionAttendanceRecords.forEach(attendanceRecord => {
-
             attendanceRecord.CheckInTime = moment(attendanceRecord.CheckInTime);
-
           });
-
         });
 
         this.eventListLocal.push(event);
-        this.storage.set(this.EVENT_LIST_LOCAL + env, this.eventListLocal);
+        this.glSecureStorage.set(this.EVENT_LIST_LOCAL + env, JSON.stringify(this.eventListLocal));
       }
-
     });
-
   }
 
   addEventArchive(event: any) {
 
     let env: string = "";
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
@@ -110,26 +100,21 @@ export class LocalDataServiceProvider {
 
       if (!exist) {
         this.eventListArchive.push(event);
-        this.storage.set(this.EVENT_LIST_ARCHIVE + env, this.eventListArchive);
+        this.glSecureStorage.set(this.EVENT_LIST_ARCHIVE + env, JSON.stringify(this.eventListArchive));
       }
-
     });
-
   }
 
   saveEventListLocal(eventList: any) {
     let env: string = "";
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
-
-      this.storage.set(this.EVENT_LIST_LOCAL + env, eventList);
-
+      this.glSecureStorage.set(this.EVENT_LIST_LOCAL + env, JSON.stringify(eventList));
     });
   }
-
 }

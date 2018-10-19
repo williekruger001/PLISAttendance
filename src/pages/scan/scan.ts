@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
-import moment from 'moment';
-import { Storage } from '@ionic/storage';
 import { EventServiceProvider } from '../../providers/event-service/event-service';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
+import { GLSecureStorageProvider } from "gl-ionic2-secure-storage/dist/src";
+import moment from 'moment';
 
 @IonicPage()
 @Component({
@@ -46,22 +46,18 @@ export class ScanPage {
     , public navParams: NavParams
     , private qrScanner: QRScanner
     , public toastCtrl: ToastController
-    , public localDataService: LocalDataServiceProvider
-    , public storage: Storage
+    , public localDataService: LocalDataServiceProvider    
     , public eventService: EventServiceProvider
     , public authenticatedUser: AuthenticatedUserProvider
+    , private glSecureStorage: GLSecureStorageProvider
   ) {
-
     this.event = navParams.get("event");
     this.sessionID = navParams.get("sessionID");
     this.sessionCheckInTimeID = navParams.get("sessionCheckInTimeID");
-
   }
 
   ionViewDidLoad() {
-
     this.setFields();
-
   }
 
   calculateStartAndEndDates() {
@@ -72,14 +68,10 @@ export class ScanPage {
 
     let checkInTimeTolerance = this.session.CheckInTolerance;
     let checkInDateTime = moment(checkInTimeObject.CheckInTime, 'DD/MM/YYYY hh:mm:ss A');
-
-    //alert("Tolerance: " + checkInTimeTolerance);
-
+    
     this.startTime = moment(checkInDateTime).subtract(checkInTimeTolerance, 'm').format('hh:mm a');
     this.endTime = moment(checkInDateTime).add(checkInTimeTolerance, 'm').format('hh:mm a');
-    this.checkInDate = moment(checkInDateTime).format('DD MMMM YYYY');
-
-    //TO DO Calculate the milliseconds until the check-in start and end
+    this.checkInDate = moment(checkInDateTime).format('DD MMMM YYYY');    
 
     let dateNow = moment();
     let startDateTime = moment(checkInDateTime).subtract(checkInTimeTolerance, 'm');
@@ -140,9 +132,6 @@ export class ScanPage {
     this.sessionAttendanceRecordsDetailed = this.session.SessionAttendanceRecords.filter((obj) => {
       return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
     });
-    
-    //TODO: Add registrants to list that is not checked in
-    
 
     this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
 
@@ -160,7 +149,6 @@ export class ScanPage {
     this.sessionEnd = this.session.SessionEnd;
 
     this.calculateStartAndEndDates();
-
   }
 
   presentToast(msg: any) {
@@ -176,7 +164,6 @@ export class ScanPage {
     let attendee = this.attendeeList.find((obj) => {
       return obj.PersonID == personID;
     })
-
     return attendee;
   }
 
@@ -205,9 +192,7 @@ export class ScanPage {
           PersonID: personID,
           FullName: attendee.FullName,
           StaffNumber: attendee.StaffNumber
-        }
-
-        //alert(attendanceRecord.CheckInTime);
+        }        
 
         this.sessionAttendanceRecordsDetailed.push(attendanceRecord);
         this.presentToast('Welcome ' + attendee.FullName + ' (' + attendee.StaffNumber + '). Your check-in was successful!')
@@ -215,26 +200,18 @@ export class ScanPage {
         this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
 
         eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecords.push(attendanceRecord);
-        eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecordsDetailed = this.sessionAttendanceRecordsDetailed;
-
-        //Update database here
+        eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecordsDetailed = this.sessionAttendanceRecordsDetailed;        
 
         let env: string       
 
-        this.storage.get('_env').then((val) => {
+        this.glSecureStorage.get('_env').then((val) => {
           if (val) {
-            env = val;
+            env = JSON.parse(val);
           } else {
             env = "prod"
           }
-          eventsList.forEach(event => {
-
-            //alert(event.Sessions.length);
-
-            event.Sessions.forEach(session => {
-
-              //alert(session.SessionAttendanceRecords.length);
-              //alert(this.authenticatedUser.user.UserID);
+          eventsList.forEach(event => {     
+            event.Sessions.forEach(session => {              
               session.SessionAttendanceRecords.forEach(attendanceRecord => {
 
                 this.eventService.updateAttendance(attendanceRecord, env, session.SessionID, this.authenticatedUser.user.UserID).then((data) => {
@@ -251,11 +228,8 @@ export class ScanPage {
                 }, (err) => {
                   //alert(err);
                 });
-
               });
-
             });
-
           });
         });
 
@@ -272,7 +246,6 @@ export class ScanPage {
         this.presentToast('This person is already checked-in!');
       }
     }
-
   }
 
   startQRScanner() {
@@ -320,7 +293,6 @@ export class ScanPage {
         }
       })
       .catch((e: any) => alert('Error is: ' + e));
-
   }
 
   toggleCamera() {

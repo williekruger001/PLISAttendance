@@ -16,10 +16,6 @@
 <ion-content padding>
 
   <h3>Events ready for Attendance</h3>
-  <!--<ion-item color="danger" text-wrap>Hint: Touch the Event tab again to sync attendances to the server.</ion-item>
-  <button ion-button (click)='logout()' full outline>
-      <ion-icon name="sync"></ion-icon>Synchronise Attendances
-  </button>-->
 
   <ion-fab right bottom>
     <button ion-fab small (click)='presentEventsModal()' [disabled]="isDisabledAddEvent" color="danger">
@@ -33,19 +29,13 @@
     </button>
   </ion-fab>
 
-  <!--<ion-item [hidden]="isHiddenEmptyListMsg" text-wrap>
-    <ion-label>
-      <ion-icon name="list" color="orange"></ion-icon>
-      There are no events setup for attendance.
-    </ion-label>
-  </ion-item>-->
-
   <ion-list no-padding>
     <ion-item-sliding *ngFor="let event of eventListLocal; let i = index">
       <ion-item text-wrap>
         <strong>
           <ion-icon name="calendar" color="orange"></ion-icon>
-          {{event.EventName}}</strong>
+          {{event.EventName}}
+        </strong>
         <br /> ID: {{event.EventID}}
         <br /> Start: {{event.EventStart}}
         <br /> End: {{event.EventEnd}}
@@ -54,7 +44,8 @@
           <button ion-item *ngFor="let session of event.Sessions" text-wrap (click)="getSessionDetails(event, session.SessionID)">
             <strong>
               <ion-icon name="briefcase" color="green"></ion-icon>
-              {{session.SessionName}}</strong>
+              {{session.SessionName}}
+            </strong>
             <br /> ID: {{session.SessionID}}
             <br /> Start: {{session.SessionStart}}
             <br /> End: {{session.SessionEnd}}

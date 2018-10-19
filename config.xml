@@ -94,4 +94,6 @@
     <plugin name="cordova-plugin-qrscanner" spec="^2.5.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
+    <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
+    <plugin name="com-intel-security-cordova-plugin" spec="^2.0.3" />
 </widget>

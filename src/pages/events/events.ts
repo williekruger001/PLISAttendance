@@ -3,13 +3,12 @@ import { IonicPage, NavController, NavParams, ModalController, LoadingController
 import { AddEventPage } from '../add-event/add-event';
 import { Network } from '@ionic-native/network';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
-import { SessionPage } from '../session/session'
-import { Storage } from '@ionic/storage';
+import { SessionPage } from '../session/session';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 import { EventServiceProvider } from '../../providers/event-service/event-service'
 import { LoginPage } from '../login/login';
+import { GLSecureStorageProvider } from "gl-ionic2-secure-storage/dist/src";
 import moment from 'moment';
-
 
 @IonicPage()
 @Component({
@@ -32,22 +31,16 @@ export class EventsPage {
     , public network: Network
     , public localDataService: LocalDataServiceProvider
     , public loadingCtrl: LoadingController
-    , public storage: Storage
     , public authenticatedUser: AuthenticatedUserProvider
     , public eventService: EventServiceProvider
+    , private glSecureStorage: GLSecureStorageProvider
   ) {
-
   }
 
-  ionViewDidLoad() {
-
+  ionViewDidLoad() {    
     this.getEventListLocal();
-
-    if (this.checkNetwork()) {
-      //Update the database with attendances
-      this.updateAttendances();
-      //Check if all attendances was uploaded
-      //Remove events that are older than 7 days and all attendance set
+    if (this.checkNetwork()) {      
+      this.updateAttendances();      
     }
   }
 
@@ -63,7 +56,6 @@ export class EventsPage {
       this.localDataService.removeEventLocal(index);
       this.getEventListLocal();
     }
-
   }
 
   updateAttendances() {
@@ -76,27 +68,17 @@ export class EventsPage {
 
     loader.present();
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
 
       //Loop throught event list and attendance records and update details
-
-      //alert(this.eventListLocal.length);
-
       this.eventListLocal.forEach(event => {
-
-        //alert(event.Sessions.length);
-
         event.Sessions.forEach(session => {
-
-          //alert(session.SessionAttendanceRecords.length);
-          //alert(this.authenticatedUser.user.UserID);
           session.SessionAttendanceRecords.forEach(attendanceRecord => {
-
             this.eventService.updateAttendance(attendanceRecord, env, session.SessionID, this.authenticatedUser.user.UserID).then((data) => {
               let sessionAttendance: any;
               sessionAttendance = data;
@@ -113,11 +95,8 @@ export class EventsPage {
               alert(err);
               this.logout();
             });
-
           });
-
         });
-
       });
 
       //This will check that ALL attendances was synchronised and archive the event if all is done.
@@ -134,39 +113,25 @@ export class EventsPage {
           let noSyncCount: number = 0;
 
           event.Sessions.forEach(session => {
-
             session.SessionAttendanceRecords.forEach(attendanceRecord => {
-
               if (attendanceRecord.SessionAttendanceID == 0) noSyncCount++;
-
             });
-
           });
 
           //If the noSyncCount is 0 remove event from list and archive
           if (noSyncCount === 0) {
-
             let eventIndex = this.eventListLocal.findIndex(obj => obj.EventID == event.EventID);
-
             this.localDataService.addEventArchive(event);
-
             this.eventListLocal.splice(eventIndex);
-
-            //this.eventListLocal.saveEventListLocal();
-
           }
 
           //Reset the counter
           noSyncCount = 0;
 
         }
-
       });
-
     });
-
     loader.dismiss();
-
   }
 
   getEventListLocal() {
@@ -185,8 +150,8 @@ export class EventsPage {
   }
 
   logout() {
-    this.storage.remove(this.USER).then(() => {
-      this.storage.remove(this.ENV_ARRAY).then(() => {
+    this.glSecureStorage.remove(this.USER).then(() => {
+      this.glSecureStorage.remove(this.ENV_ARRAY).then(() => {
         this.navCtrl.push(LoginPage);
         //this.platform.exitApp();        
       });

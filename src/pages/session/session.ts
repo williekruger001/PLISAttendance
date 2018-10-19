@@ -52,22 +52,15 @@ export class SessionPage {
     this.sessionName = this.session.SessionName;
     this.sessionStart = this.session.SessionStart;
     this.sessionEnd = this.session.SessionEnd;
-    this.sessionRegistrationCount = this.session.SessionAttendees.length;
-
-    //alert(this.session.CheckInTimes.length);
-
+    this.sessionRegistrationCount = this.session.SessionAttendees.length;   
   }
 
   getCheckInDetails(sessionCheckInTimeID) {
-
     this.navCtrl.push(ScanPage, {
       event: this.event,
       sessionID: this.sessionID,
       sessionCheckInTimeID: sessionCheckInTimeID
-    });
-
-    //let scanModal = this.modalCtrl.create(ScanPage);
-    //scanModal.present();
+    });    
   }
 
 }

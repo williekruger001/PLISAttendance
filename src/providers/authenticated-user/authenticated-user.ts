@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { GLSecureStorageProvider } from "gl-ionic2-secure-storage/dist/src";
 
 @Injectable()
 
@@ -12,18 +12,18 @@ export class AuthenticatedUserProvider {
   envArray: any = [];
 
   constructor(
-    public storage: Storage,
     public httpClient: HttpClient
+    , private glSecureStorage: GLSecureStorageProvider
   ) { }
 
   getEnvironments() {
 
     return new Promise((resolve, reject) => {
 
-      this.storage.get(this.ENV_ARRAY).then((val) => {
+      this.glSecureStorage.get(this.ENV_ARRAY).then((val) => {
         if (val) {
           this.envArray = [];
-          this.envArray = val;
+          this.envArray = JSON.parse(val);
           resolve(this.envArray);
         } else {
           this.envArray = [];
@@ -31,7 +31,7 @@ export class AuthenticatedUserProvider {
           this.envArray.push({ name: 'Production', value: 'prod', url: 'https://plis-admin.det.wa.edu.au/webapi/' });
           this.envArray.push({ name: 'Training', value: 'train', url: 'https://plis-admin-training.det.wa.edu.au/webapi/' });
           this.envArray.push({ name: 'Test', value: 'test', url: 'https://plis-admin-test.det.wa.edu.au/webapi/' });
-          this.storage.set(this.ENV_ARRAY, this.envArray);
+          this.glSecureStorage.set(this.ENV_ARRAY, JSON.stringify(this.envArray));
           resolve(this.envArray);
         }
       })

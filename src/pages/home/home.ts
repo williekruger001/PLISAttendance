@@ -1,26 +1,10 @@
-import {
-  Component
-} from '@angular/core';
-import {
-  NavController,
-  Platform,
-  AlertController
-} from 'ionic-angular';
-import {
-  Network
-} from '@ionic-native/network';
-import {
-  InAppBrowser
-} from '@ionic-native/in-app-browser';
-import {
-  AuthenticatedUserProvider
-} from '../../providers/authenticated-user/authenticated-user';
-import {
-  Storage
-} from '@ionic/storage';
+import { Component } from '@angular/core';
+import { NavController, Platform, AlertController } from 'ionic-angular';
+import { Network } from '@ionic-native/network';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
 import { LoginPage } from '../login/login';
-
-
+import { GLSecureStorageProvider } from "gl-ionic2-secure-storage/dist/src";
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -45,9 +29,9 @@ export class HomePage {
     public network: Network,
     public iab: InAppBrowser,
     public platform: Platform,
-    public authenticatedUser: AuthenticatedUserProvider,
-    public storage: Storage,
-    public alertCtrl: AlertController
+    public authenticatedUser: AuthenticatedUserProvider,    
+    public alertCtrl: AlertController,
+    private glSecureStorage: GLSecureStorageProvider
   ) {
 
   }
@@ -55,9 +39,7 @@ export class HomePage {
   ionViewDidLoad() {
 
     this.platform.ready().then(() => {
-
       this.checkNetwork();
-
       this.getOrganisations().then(
         (response) => {
           if (this.authenticatedUser.user.Org_Selected === 99999) {
@@ -89,8 +71,8 @@ export class HomePage {
   }
 
   logout() {
-    this.storage.remove(this.USER).then(() => {
-      this.storage.remove(this.ENV_ARRAY).then(() => {
+    this.glSecureStorage.remove(this.USER).then(() => {
+      this.glSecureStorage.remove(this.ENV_ARRAY).then(() => {
         this.navCtrl.push(LoginPage);
         //this.platform.exitApp();        
       });
@@ -98,7 +80,6 @@ export class HomePage {
   }
 
   checkNetwork() {
-
     this.network.onDisconnect().subscribe(() => {
       this.networkIcon = "warning";
       this.networkIconColor = "orange"
@@ -108,12 +89,11 @@ export class HomePage {
       this.networkIcon = "wifi";
       this.networkIconColor = "green";
     });
-
   }
 
   updateOrg() {
     this.authenticatedUser.user.Org_Selected = this.selOrganisation;
-    this.storage.set(this.USER, this.authenticatedUser.user);
+    this.glSecureStorage.set(this.USER, JSON.stringify(this.authenticatedUser.user));
   }
 
   errorAlert(title: string, subTitle: string) {

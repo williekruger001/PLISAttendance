@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, LoadingController } from 'ionic-angular';
 import { Network } from '@ionic-native/network';
 import { EventServiceProvider } from '../../providers/event-service/event-service'
-import { Storage } from '@ionic/storage';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
 import { LoginPage } from '../login/login';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
+import { GLSecureStorageProvider } from "gl-ionic2-secure-storage/dist/src";
 
 
 @IonicPage()
@@ -27,12 +27,12 @@ export class AddEventPage {
     public navCtrl: NavController
     , public navParams: NavParams
     , public network: Network
-    , public eventService: EventServiceProvider
-    , public storage: Storage
+    , public eventService: EventServiceProvider    
     , public localDataService: LocalDataServiceProvider
     , public viewCtrl: ViewController
     , public loadingCtrl: LoadingController
-    , public authenticatedUser: AuthenticatedUserProvider,
+    , public authenticatedUser: AuthenticatedUserProvider
+    , private glSecureStorage: GLSecureStorageProvider
   ) { }
 
   ionViewDidLoad() {
@@ -50,9 +50,9 @@ export class AddEventPage {
     });
     loader.present();
 
-    this.storage.get('_env').then((val) => {
+    this.glSecureStorage.get('_env').then((val) => {
       if (val) {
-        env = val;
+        env = JSON.parse(val);
       } else {
         env = "prod"
       }
@@ -78,10 +78,9 @@ export class AddEventPage {
   }
 
   logout() {
-    this.storage.remove(this.USER).then(() => {
-      this.storage.remove(this.ENV_ARRAY).then(() => {
-        this.navCtrl.push(LoginPage);
-        //this.platform.exitApp();        
+    this.glSecureStorage.remove(this.USER).then(() => {
+      this.glSecureStorage.remove(this.ENV_ARRAY).then(() => {
+        this.navCtrl.push(LoginPage);               
       });
     });
   }

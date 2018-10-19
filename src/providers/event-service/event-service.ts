@@ -1,17 +1,14 @@
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthenticatedUserProvider } from '../../providers/authenticated-user/authenticated-user';
-import { Storage } from '@ionic/storage';
-//import moment from 'moment';
 
 @Injectable()
 export class EventServiceProvider {
 
   constructor(
     public httpClient: HttpClient
-    , public authenticatedUser: AuthenticatedUserProvider
-    , public storage: Storage) {
-
+    , public authenticatedUser: AuthenticatedUserProvider    
+    ) {
   }
 
   getEvents(env) {
@@ -62,9 +59,7 @@ export class EventServiceProvider {
 
     let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; //'https://plis-admin-test.det.wa.edu.au/webapi/'
     let apiMethod: string = 'PLISAppEvents.asmx/UpdateAttendance';
-
-    //alert(baseUrl + apiMethod);
-
+   
     return new Promise((resolve, reject) => {
       this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
         .subscribe(data => {
