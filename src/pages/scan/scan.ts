@@ -249,12 +249,12 @@ export class ScanPage {
   }
 
   startQRScanner() {
-
+    alert("inside startQRScanner");
     this.qrScanner.prepare()
       .then((status: QRScannerStatus) => {
         if (status.authorized) {
           // camera permission was granted  
-
+          alert("permission garnted");
           // start scanning
           this.scanSub = this.qrScanner.scan().subscribe((text: string) => {
 
@@ -285,11 +285,13 @@ export class ScanPage {
 
         } else if (status.denied) {
           this.qrScanner.openSettings();
+          alert("permission denied");
           // camera permission was permanently denied
           // you must use QRScanner.openSettings() method to guide the user to the settings page
           // then they can grant the permission from there
         } else {
           // permission was denied, but not permanently. You can ask for permission again at a later time.
+          alert("permission unknown");
         }
       })
       .catch((e: any) => alert('Error is: ' + e));
