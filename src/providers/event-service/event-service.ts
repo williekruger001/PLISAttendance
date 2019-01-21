@@ -42,6 +42,8 @@ export class EventServiceProvider {
 
   }
 
+//comment to test gitlab
+
   updateAttendance(attendeeRecord: any, env: string, sessionID: any, lastUpdatedBy: string) {
 
     let headers = new HttpHeaders()
