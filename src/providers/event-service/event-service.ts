@@ -28,7 +28,7 @@ export class EventServiceProvider {
       _bypass: bypass
     };
 
-    let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; //'https://plis-admin-test.det.wa.edu.au/webapi/'
+    let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; 
     let apiMethod: string = 'PLISAppEvents.asmx/GetAttendanceEvents';
 
     return new Promise((resolve, reject) => {
@@ -42,7 +42,31 @@ export class EventServiceProvider {
 
   }
 
-//comment to test gitlab
+  getEvent(env, eventID) {
+
+    let headers = new HttpHeaders()
+      .set('content-type', 'application/json; charset=utf-8')
+      .set('staffNumber', this.authenticatedUser.user.UserID)
+      .set('token', this.authenticatedUser.user.Token);   
+
+    
+    let body = {
+      _eventID: eventID
+    };
+
+    let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; 
+    let apiMethod: string = 'PLISAppEvents.asmx/GetEvent';
+
+    return new Promise((resolve, reject) => {
+      this.httpClient.post(baseUrl + apiMethod, body, { headers: headers })
+        .subscribe(data => {
+          resolve(data);
+        }, (err: HttpErrorResponse) => {          
+          reject('Status code: ' + err.status + ' - ' + err.statusText);
+        });
+    });
+
+  }
 
   updateAttendance(attendeeRecord: any, env: string, sessionID: any, lastUpdatedBy: string) {
 
@@ -59,7 +83,7 @@ export class EventServiceProvider {
       _lastUpdatedBy: lastUpdatedBy
     };
 
-    let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; //'https://plis-admin-test.det.wa.edu.au/webapi/'
+    let baseUrl: string = this.authenticatedUser.getEnvironment(env).url; 
     let apiMethod: string = 'PLISAppEvents.asmx/UpdateAttendance';
    
     return new Promise((resolve, reject) => {

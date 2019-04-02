@@ -22,12 +22,13 @@ export class AddEventPage {
   isHiddenEmptyListMsg: boolean = true;
   isHiddenNetworkMsg: boolean = true;
   eventList: any;
+  anEvent: any;
 
   constructor(
     public navCtrl: NavController
     , public navParams: NavParams
     , public network: Network
-    , public eventService: EventServiceProvider    
+    , public eventService: EventServiceProvider
     , public localDataService: LocalDataServiceProvider
     , public viewCtrl: ViewController
     , public loadingCtrl: LoadingController
@@ -59,40 +60,74 @@ export class AddEventPage {
       this.eventService.getEvents(env).then((data) => {
         this.eventList = data;
         this.eventList = this.eventList.d;
-      
-          if (this.eventList && this.eventList.length > 0) {
-            this.isHiddenEmptyListMsg = true;
-          } else {
-            this.isHiddenEmptyListMsg = false;
-          }
-       
+
+        if (this.eventList && this.eventList.length > 0) {
+          this.isHiddenEmptyListMsg = true;
+        } else {
+          this.isHiddenEmptyListMsg = false;
+        }
+
         loader.dismiss();
       }, (err) => {
         loader.dismiss();
         alert(err);
-        this.logout();
+        //this.logout();
       });
 
     });
 
   }
 
+  getEvent(eventID) {
+    return new Promise((resolve, reject) => {   
+    
+    let env: string
+
+    this.glSecureStorage.get('_env').then((val) => {
+      if (val) {
+        env = JSON.parse(val);
+      } else {
+        env = "prod"
+      }
+      
+      this.eventService.getEvent(env, eventID).then((data) => {
+        this.anEvent = data;
+        this.anEvent = this.anEvent.d;
+        resolve(this.anEvent);
+      }, (err) => {
+        reject(err);
+      });
+
+    });
+    
+  })
+  }
+
+  addEvent(i: any) {
+    let eID = this.eventList[i].EventID;
+    
+    this.getEvent(eID).then((response) => {
+      
+      if (response) {
+        this.localDataService.addEventLocal(response);
+        this.viewCtrl.dismiss();
+      } else {
+        alert("Event not found");
+      }
+    });   
+  }
+
   logout() {
     this.glSecureStorage.remove(this.USER).then(() => {
       this.glSecureStorage.remove(this.ENV_ARRAY).then(() => {
-        this.navCtrl.push(LoginPage);               
+        this.navCtrl.push(LoginPage);
       });
     });
   }
 
   closeModal() {
     this.viewCtrl.dismiss();
-  }
-
-  addEvent(i: any) {
-    this.localDataService.addEventLocal(this.eventList[i]);
-    this.viewCtrl.dismiss();
-  }
+  }  
 
   checkNetwork() {
 

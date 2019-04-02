@@ -54,7 +54,7 @@ export class AuthenticatedUserProvider {
       _userID: userid
     };
 
-    let baseUrl: string = this.getEnvironment(env).url; //'https://plis-admin-test.det.wa.edu.au/webapi/'
+    let baseUrl: string = this.getEnvironment(env).url; 
     let apiMethod: string = 'PLISAppEvents.asmx/GetUser';
 
     return new Promise((resolve, reject) => {

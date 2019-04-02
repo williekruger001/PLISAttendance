@@ -38,21 +38,21 @@ export class LoginPage {
 
   constructor(
     public navCtrl: NavController
-    , public navParams: NavParams    
+    , public navParams: NavParams
     , public platform: Platform
     , public authenticatedUser: AuthenticatedUserProvider
     , public network: Network
     , public alertCtrl: AlertController
     , public localDataService: LocalDataServiceProvider
     , private glSecureStorage: GLSecureStorageProvider
-    ) {
+  ) {
   }
 
   ionViewDidLoad() {
     //this.glSecureStorage.clear();
 
-    this.authenticatedUser.getEnvironments().then((response) => {         
-      this.envArray = this.authenticatedUser.envArray;      
+    this.authenticatedUser.getEnvironments().then((response) => {
+      this.envArray = this.authenticatedUser.envArray;
       this.processAuthentication();
     });
   }
@@ -142,34 +142,51 @@ export class LoginPage {
   createBrowser() { //Return a Promise
     return new Promise((resolve, reject) => {
       this.platform.ready().then(() => {
-        this.env = this.selEnvironment;       
+
+        this.env = this.selEnvironment;
         let loginUrl: string = this.authenticatedUser.getEnvironment(this.env).url + "plisappauth.aspx";
-        const ref = cordova.InAppBrowser.open(loginUrl, '_blank', 'location=yes');
+        const ref = cordova.InAppBrowser.open(loginUrl, '_blank', 'location=yes', 'clearcache=yes');
+
         ref.addEventListener('loadstop', () => {
           ref.executeScript({ code: 'getAuthenticationInfo();' }, (data) => {
+
             if (data[0] != null) {
-              let userid: string = JSON.parse(data[0]).UserID;
-              let token: string = JSON.parse(data[0]).Token;              
-              this.authenticatedUser.getUser(userid, this.selEnvironment, token).then((data) => {
-                let userObject: any = data;
-                this.authenticatedUser.user = userObject.d;
-                this.authenticatedUser.user.Token = token;
-                this.glSecureStorage.set(this.USER, JSON.stringify(this.authenticatedUser.user));
-                this.glSecureStorage.set(this.AUTH_TIME, JSON.stringify(Date.now()));
+              
+              //console.log(JSON.parse(data[0]));
+
+              let hasAccess: boolean = JSON.parse(data[0]).hasAccess;
+
+              if (hasAccess) {
+
+                let userid: string = JSON.parse(data[0]).UserID;
+                let token: string = JSON.parse(data[0]).Token;
+
+                this.authenticatedUser.getUser(userid, this.selEnvironment, token).then((data) => {
+                  let userObject: any = data;
+                  this.authenticatedUser.user = userObject.d;
+                  this.authenticatedUser.user.Token = token;
+                  this.glSecureStorage.set(this.USER, JSON.stringify(this.authenticatedUser.user));
+                  this.glSecureStorage.set(this.AUTH_TIME, JSON.stringify(Date.now()));
+                  ref.close();
+                  if (this.authenticatedUser.user.Org_Selected == 99999) {
+                    this.authenticatedUser.user.Org_Selected = 0;
+                  }
+                  resolve(this.authenticatedUser.user);
+                },
+                  (err) => {
+                    ref.close();
+                    reject(err)
+                  });
+
+              } else {
                 ref.close();
-                if (this.authenticatedUser.user.Org_Selected == 99999) {
-                  this.authenticatedUser.user.Org_Selected = 0;
-                }
-                resolve(this.authenticatedUser.user);
-              }, (err) => {
-                ref.close();
-                reject(err)
-              });
+                reject('User does not have permission to use the app.');
+              }
+
             } else {
-              reject('No data returned!');
+              ref.close();
+              reject('User does not have permission to use the app.');
             }
-          }).catch((e) => {
-            alert(e);
           });
         });
       });
@@ -184,14 +201,14 @@ export class LoginPage {
 
   doLogin() {
     // 1. Check if there is an authenticated user in the data store       
-    this.glSecureStorage.get(this.USER).then((val) => {      
+    this.glSecureStorage.get(this.USER).then((val) => {
       if (val) { //There is an authenticated user in the data store        
         //Get the auth age        
         this.getAuthAge().then( //Check auth age
           (response) => {
             if (response == true) {
               //Set the singleton for the user              
-              this.authenticatedUser.user = JSON.parse(val);              
+              this.authenticatedUser.user = JSON.parse(val);
               if (this.authenticatedUser.user.Org_Selected == 99999) {
                 this.authenticatedUser.user.Org_Selected = 0;
               }
@@ -217,14 +234,14 @@ export class LoginPage {
             },
             (error) => {
               this.errorAlert(
-                'Authentication issue.',
+                'Authentication problem.',
                 error
               );
             });
         } else { //No internet connection and no authenticated user in data store
           this.errorAlert(
             'Internet Connection',
-            'There is no Internet connection available and no authenticated account in the app. Please ensure an Internet connection to authenticate.'
+            'There is no Internet connection available and no authenticated account in the app. Please ensure you are connected to the Internet.'
           );
         }
       }
