@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
-import { ScanPage } from '../scan/scan'
+import { ScanPage } from '../scan/scan';
+import {SessionAttendeeSheetPage} from '../session-attendee-sheet/session-attendee-sheet';
 
 @IonicPage()
 @Component({
@@ -61,6 +62,14 @@ export class SessionPage {
       sessionID: this.sessionID,
       sessionCheckInTimeID: sessionCheckInTimeID
     });    
+  }
+
+  getSignInSheet(){
+    this.navCtrl.push(SessionAttendeeSheetPage, {      
+      //event: this.event,
+      eventID: this.eventID,
+      sessionID: this.sessionID
+    });  
   }
 
 }

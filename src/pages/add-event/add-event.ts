@@ -104,10 +104,8 @@ export class AddEventPage {
   }
 
   addEvent(i: any) {
-    let eID = this.eventList[i].EventID;
-    
-    this.getEvent(eID).then((response) => {
-      
+    let eID = this.eventList[i].EventID;    
+    this.getEvent(eID).then((response) => {      
       if (response) {
         this.localDataService.addEventLocal(response);
         this.viewCtrl.dismiss();

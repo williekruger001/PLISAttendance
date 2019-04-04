@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+
+
+
+</head>
+
+<body>
+
+    <div id="notSupported"></div>
+    <div id="androidLink"><a href="PLISAttendance-Signed.apk"><img src="android.png" width="150px"></a></div>    
+    <div id="iosLink"><a href="https://i.diawi.com/M7BzR1"><img src="iosget.png" width="150px"></a></div>
+
+    <script>
+
+        /**
+         * JavaScript Client Detection
+         * (C) viazenetti GmbH (Christian Ludwig)
+         */
+        (function (window) {
+            {
+                var unknown = '-';
+                var nAgt = navigator.userAgent;
+
+                // system
+                var os = unknown;
+                var clientStrings = [
+                    { s: 'Windows 10', r: /(Windows 10.0|Windows NT 10.0)/ },
+                    { s: 'Windows 8.1', r: /(Windows 8.1|Windows NT 6.3)/ },
+                    { s: 'Windows 8', r: /(Windows 8|Windows NT 6.2)/ },
+                    { s: 'Windows 7', r: /(Windows 7|Windows NT 6.1)/ },
+                    { s: 'Windows Vista', r: /Windows NT 6.0/ },
+                    { s: 'Windows Server 2003', r: /Windows NT 5.2/ },
+                    { s: 'Windows XP', r: /(Windows NT 5.1|Windows XP)/ },
+                    { s: 'Windows 2000', r: /(Windows NT 5.0|Windows 2000)/ },
+                    { s: 'Windows ME', r: /(Win 9x 4.90|Windows ME)/ },
+                    { s: 'Windows 98', r: /(Windows 98|Win98)/ },
+                    { s: 'Windows 95', r: /(Windows 95|Win95|Windows_95)/ },
+                    { s: 'Windows NT 4.0', r: /(Windows NT 4.0|WinNT4.0|WinNT|Windows NT)/ },
+                    { s: 'Windows CE', r: /Windows CE/ },
+                    { s: 'Windows 3.11', r: /Win16/ },
+                    { s: 'Android', r: /Android/ },
+                    { s: 'Open BSD', r: /OpenBSD/ },
+                    { s: 'Sun OS', r: /SunOS/ },
+                    { s: 'Linux', r: /(Linux|X11)/ },
+                    { s: 'iOS', r: /(iPhone|iPad|iPod)/ },
+                    { s: 'Mac OS X', r: /Mac OS X/ },
+                    { s: 'Mac OS', r: /(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/ },
+                    { s: 'QNX', r: /QNX/ },
+                    { s: 'UNIX', r: /UNIX/ },
+                    { s: 'BeOS', r: /BeOS/ },
+                    { s: 'OS/2', r: /OS\/2/ },
+                    { s: 'Search Bot', r: /(nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\/Teoma|ia_archiver)/ }
+                ];
+                for (var id in clientStrings) {
+                    var cs = clientStrings[id];
+                    if (cs.r.test(nAgt)) {
+                        os = cs.s;
+                        break;
+                    }
+                }
+            }
+            window.jscd = {
+                os: os
+            };
+        }(this));
+
+        var downLoad = {            
+             setDownLoadLink : function () {
+                var iosLink = document.querySelector("#iosLink");
+                var androidLink = document.querySelector("#androidLink");
+                var notSupported = document.querySelector("#notSupported");
+
+                if (jscd.os === "iOS") {
+                    iosLink.style.display = "block";
+                    androidLink.style.display = "none";
+                    notSupported.textContent = ""
+                } else if (jscd.os === "Android") {
+                    iosLink.style.display = "none";
+                    androidLink.style.display = "block";
+                    notSupported.textContent = ""
+                } else {
+                    androidLink.style.display = "none";
+                    iosLink.style.display = "none";
+                    notSupported.textContent = "Operating system not supported!"
+                }
+            }
+        }
+
+        downLoad.setDownLoadLink();
+
+
+
+    </script>
+
+</body>
+
+</html>

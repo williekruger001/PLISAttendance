@@ -12,6 +12,7 @@ import { EventsPage } from '../pages/events/events'
 import { AddEventPage } from '../pages/add-event/add-event'
 import { SessionPage } from '../pages/session/session'
 import { ScanPage } from '../pages/scan/scan'
+import { SessionAttendeeSheetPage } from '../pages/session-attendee-sheet/session-attendee-sheet'
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -49,7 +50,8 @@ import { GlIonic2SecureStorageModule } from 'gl-ionic2-secure-storage/dist/src';
     EventsPage,
     AddEventPage,
     SessionPage,
-    ScanPage
+    ScanPage,
+    SessionAttendeeSheetPage
   ],
   imports: [
     BrowserModule,
@@ -71,7 +73,8 @@ import { GlIonic2SecureStorageModule } from 'gl-ionic2-secure-storage/dist/src';
     EventsPage,
     AddEventPage,
     SessionPage,
-    ScanPage
+    ScanPage,
+    SessionAttendeeSheetPage
   ],
   providers: [
     StatusBar,

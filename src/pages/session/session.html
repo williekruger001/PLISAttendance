@@ -8,35 +8,55 @@
 
 
 <ion-content padding>
+
   <h2>
     Check-In Time/s
   </h2>
-  <p>
-    <strong><ion-icon name="calendar" color="orange"></ion-icon>
-    {{eventName}}</strong>
-    <br />Event ID: {{eventID}}
-    <br />Event Start: {{eventStart}}
-    <br /> Event End: {{eventEnd}}
-  </p>
 
-  
-  <p indent>
-    <strong><ion-icon name="briefcase" color="green"></ion-icon>
-    {{sessionName}}</strong> 
-    <br />Session ID: {{sessionID}}
-    <br />Session Start: {{sessionStart}}
-    <br />Session End: {{sessionEnd}}
-    <br />Registration Count: {{sessionRegistrationCount}}
-  </p>
+  <div>
+    <div>
+      <strong>
+        <ion-icon name="calendar" color="orange"></ion-icon> {{eventName}}
+      </strong>
+    </div>
+    <blockquote>
+      <div>Event ID: {{eventID}}</div>
+      <div>Start: {{eventStart}}</div>
+      <div>End: {{eventEnd}}</div>
+    </blockquote>
 
-  
-  Click a Check-In time to launch the QR-Code scanner and start scanning.
-  <br />
-  <br />
-  <ion-list>
-    <button ion-item *ngFor="let checkIn of checkInTimes" text-wrap (click)="getCheckInDetails(checkIn.SessionCheckInTimeID)">
-      <strong><ion-icon name="barcode" color="green"></ion-icon>
-      {{checkIn.CheckInTime}}</strong>
-    </button>
-  </ion-list>
+  </div>
+  <br>
+
+  <div>
+    <ion-label text-wrap (click)='getSignInSheet()'>
+      <div>
+        <strong>
+          <ion-icon name="briefcase" color="green"></ion-icon> {{sessionName}}
+        </strong>
+      </div>
+    </ion-label>
+    <blockquote>
+      <div>Session ID: {{sessionID}}</div>
+      <div>Start: {{sessionStart}}</div>
+      <div>End: {{sessionEnd}}</div>
+      <div>Registration Count: {{sessionRegistrationCount}}</div>
+    </blockquote>
+  </div>
+  <br>
+
+  <div>Click a Check-In time to launch the QR-Code scanner and start scanning.</div>
+  <div>
+    <ion-list>
+      <button ion-item *ngFor="let checkIn of checkInTimes" text-wrap
+        (click)="getCheckInDetails(checkIn.SessionCheckInTimeID)">
+        <strong>
+          <ion-icon name="barcode" color="green"></ion-icon>
+          {{checkIn.CheckInTime}}
+        </strong>
+      </button>
+    </ion-list>
+  </div>
+
+
 </ion-content>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="au.edu.wa.det.plis" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="au.edu.wa.det.plis" version="1.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>PLIS</name>
     <description>PLIS Attendance recording.</description>
     <author email="willie.kruger@education.wa.edu.au" href="https://plis.det.wa.edu.au/">PLIS Team</author>
@@ -94,6 +94,7 @@
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
     <plugin name="com-intel-security-cordova-plugin" spec="^2.0.3" />
+    <plugin name="cordova-plugin-statusbar" spec="2.4.2" />
     <engine name="android" spec="6.3.0" />
     <engine name="ios" spec="4.5.4" />
 </widget>
