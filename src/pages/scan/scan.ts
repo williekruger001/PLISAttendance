@@ -46,10 +46,10 @@ export class ScanPage {
     , public navParams: NavParams
     , private qrScanner: QRScanner
     , public toastCtrl: ToastController
-    , public localDataService: LocalDataServiceProvider    
+    , public localDataService: LocalDataServiceProvider
     , public eventService: EventServiceProvider
     , public authenticatedUser: AuthenticatedUserProvider
-    , private glSecureStorage: GLSecureStorageProvider
+    , private glSecureStorage: GLSecureStorageProvider    
   ) {
     this.event = navParams.get("event");
     this.sessionID = navParams.get("sessionID");
@@ -68,16 +68,16 @@ export class ScanPage {
 
     let checkInTimeTolerance = this.session.CheckInTolerance;
     let checkInDateTime = moment(checkInTimeObject.CheckInTime, 'DD/MM/YYYY hh:mm:ss A');
-    
+
     this.startTime = moment(checkInDateTime).subtract(checkInTimeTolerance, 'm').format('hh:mm a');
     this.endTime = moment(checkInDateTime).add(checkInTimeTolerance, 'm').format('hh:mm a');
-    this.checkInDate = moment(checkInDateTime).format('DD MMMM YYYY');    
+    this.checkInDate = moment(checkInDateTime).format('DD MMMM YYYY');
 
     let dateNow = moment();
     let startDateTime = moment(checkInDateTime).subtract(checkInTimeTolerance, 'm');
     let endDateTime = moment(checkInDateTime).add(checkInTimeTolerance, 'm');
 
-    if (dateNow < startDateTime) {      
+    if (dateNow < startDateTime) {
       let startMilliseconds = moment
         .duration(moment(startDateTime)
           .diff(moment(dateNow)))
@@ -127,7 +127,7 @@ export class ScanPage {
     this.session = this.event.Sessions.find((obj) => {
       return obj.SessionID === this.sessionID;
     });
-    
+
     this.sessionAttendanceRecordsDetailed = this.session.SessionAttendanceRecords.filter((obj) => {
       return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
     });
@@ -154,10 +154,13 @@ export class ScanPage {
     let toast = this.toastCtrl.create({
       message: msg,
       duration: this.timeOutToast,
-      position: 'middle'
+      position: 'middle',
+      cssClass: 'toast'
     });
     toast.present();
   }
+
+  
 
   getAttendee(personID) {
     let attendee = this.attendeeList.find((obj) => {
@@ -191,17 +194,17 @@ export class ScanPage {
           PersonID: personID,
           FullName: attendee.FullName,
           StaffNumber: attendee.StaffNumber
-        }        
+        }
 
         this.sessionAttendanceRecordsDetailed.push(attendanceRecord);
-        this.presentToast('Welcome ' + attendee.FullName + ' (' + attendee.StaffNumber + '). Your check-in was successful!')
+        this.presentToast('Your check-in was successful! ' + attendee.FullName + ' (' + attendee.StaffNumber + ')')
 
         this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
 
         eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecords.push(attendanceRecord);
-        eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecordsDetailed = this.sessionAttendanceRecordsDetailed;        
+        eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecordsDetailed = this.sessionAttendanceRecordsDetailed;
 
-        let env: string       
+        let env: string
 
         this.glSecureStorage.get('_env').then((val) => {
           if (val) {
@@ -209,8 +212,8 @@ export class ScanPage {
           } else {
             env = "prod"
           }
-          eventsList.forEach(event => {     
-            event.Sessions.forEach(session => {              
+          eventsList.forEach(event => {
+            event.Sessions.forEach(session => {
               session.SessionAttendanceRecords.forEach(attendanceRecord => {
 
                 this.eventService.updateAttendance(attendanceRecord, env, session.SessionID, this.authenticatedUser.user.UserID).then((data) => {
@@ -240,7 +243,7 @@ export class ScanPage {
       }
     } else {
       if (attendee) {
-        this.presentToast(attendee.FullName + ' (' + attendee.StaffNumber + '). You already checked-in!');
+        this.presentToast('You already checked-in! ' + attendee.FullName + ' (' + attendee.StaffNumber + ')');
       } else {
         this.presentToast('This person is already checked-in!');
       }
