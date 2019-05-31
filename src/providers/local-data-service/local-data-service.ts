@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import moment from 'moment';
+//import moment from 'moment';
 import {GLSecureStorageProvider} from "gl-ionic2-secure-storage/dist/src";
 
 @Injectable()
@@ -69,11 +69,11 @@ export class LocalDataServiceProvider {
 
         //First update any CheckIn times with moment
 
-        event.Sessions.forEach(session => {
-          session.SessionAttendanceRecords.forEach(attendanceRecord => {
-            attendanceRecord.CheckInTime = moment(attendanceRecord.CheckInTime);
-          });
-        });
+        // event.Sessions.forEach(session => {
+        //   session.SessionAttendanceRecords.forEach(attendanceRecord => {
+        //     attendanceRecord.CheckInTime = moment(attendanceRecord.CheckInTime);
+        //   });
+        // });
 
         this.eventListLocal.push(event);
         this.glSecureStorage.set(this.EVENT_LIST_LOCAL + env, JSON.stringify(this.eventListLocal));

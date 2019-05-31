@@ -61,7 +61,7 @@ export class LoginPage {
     return new Promise((resolve, reject) => {
       this.glSecureStorage.get(this.AUTH_TIME).then((val) => {
         if (val) {
-          if ((Date.now() - JSON.parse(val)) / (24 * 3600 * 1000) < 1) { //TO DO: Put the authentication age in the PLIS database as a parameter for app initialisation
+          if ((Date.now() - JSON.parse(val)) / (72 * 3600 * 1000) < 1) { //TO DO: Put the authentication age in the PLIS database as a parameter for app initialisation
             resolve(true);
           } else {
             this.glSecureStorage.remove(this.USER).then(() => {

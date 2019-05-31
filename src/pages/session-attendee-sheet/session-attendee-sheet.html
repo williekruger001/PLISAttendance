@@ -44,7 +44,7 @@
   <div *ngFor='let attendee of attendees' text-wrap lines="none">
     <ion-icon name="person" color="green"></ion-icon> {{attendee.StaffNumber}} - {{attendee.FullName}}
     <blockquote *ngFor='let checkIn of attendee.checkInTimes' text-wrap lines="none">
-      {{checkIn.CheckInTime | date: "hh:mm a"}} -
+      {{checkIn.CheckInTime}} -
       <ion-icon *ngIf='checkIn.checkIn == true' name="checkmark-circle" color="green"></ion-icon>
       <ion-icon *ngIf='checkIn.checkIn == false' name="close-circle" color="danger"></ion-icon>
     </blockquote>

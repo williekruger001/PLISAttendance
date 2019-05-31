@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { LocalDataServiceProvider } from '../../providers/local-data-service/local-data-service';
 import { EventServiceProvider } from '../../providers/event-service/event-service';
@@ -33,7 +33,6 @@ export class ScanPage {
   sessionAttendanceRecords: any = [];
   sessionAttendanceRecordsDetailed: any = [];
   attendeeList: any = [];
-  timeOutToast: any = 4000;
   timeOutScanner: any = 3500;
   checkInDate: any;
   startTime: any;
@@ -49,7 +48,8 @@ export class ScanPage {
     , public localDataService: LocalDataServiceProvider
     , public eventService: EventServiceProvider
     , public authenticatedUser: AuthenticatedUserProvider
-    , private glSecureStorage: GLSecureStorageProvider    
+    , private glSecureStorage: GLSecureStorageProvider
+    , private alertCtrl: AlertController
   ) {
     this.event = navParams.get("event");
     this.sessionID = navParams.get("sessionID");
@@ -132,7 +132,20 @@ export class ScanPage {
       return obj.SessionCheckInTimeID == this.sessionCheckInTimeID;
     });
 
-    this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
+    //console.log(this.sessionAttendanceRecordsDetailed);
+
+    try {
+      this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
+    }
+    catch (err) {
+
+    }
+
+    //this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
+
+    this.sessionAttendanceRecordsDetailed.forEach(attendanceRecord => {
+      attendanceRecord.CheckInTime = moment(attendanceRecord.CheckInTime);
+    });
 
     if (this.sessionAttendanceRecordsDetailed && this.sessionAttendanceRecordsDetailed.length > 0) {
       this.isHiddenEmptyListMsg = true;
@@ -150,17 +163,70 @@ export class ScanPage {
     this.calculateStartAndEndDates();
   }
 
-  presentToast(msg: any) {
+  presentToast(msg: any, myClass: string, timeOut: any) {
+    this.timeOutScanner = timeOut;
     let toast = this.toastCtrl.create({
       message: msg,
-      duration: this.timeOutToast,
+      duration: timeOut,
       position: 'middle',
-      cssClass: 'toast'
+      cssClass: myClass
     });
     toast.present();
   }
 
-  
+  presentManualSignIn() {
+    const alert = this.alertCtrl.create({
+      message: 'Manual Sign-In',
+      inputs: [
+        {
+          name: 'txtEnumber',
+          type: 'text',
+          id: 'txtEnumber',
+          placeholder: 'Staff Number'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            alert.dismiss();
+          }
+        }, {
+          text: 'Sign-In',
+          handler: (data) => {
+            this.processAttendanceByStaffNumber(data);
+            //console.log('Confirm Ok');
+          }
+        }
+      ]
+    })
+
+    alert.present();
+  }
+
+  getAttendeeByStaffNumber(staffNumber) {
+    let attendee = this.attendeeList.find((obj) => {
+      return obj.StaffNumber == staffNumber;
+    })
+    return attendee;
+  }
+
+  processAttendanceByStaffNumber(data: any) {
+    if (data && data.txtEnumber != '') {
+      let attendee = this.getAttendeeByStaffNumber(data.txtEnumber);
+
+      if (attendee) {
+        this.processAttendance(attendee.PersonID);
+      } else {
+        this.presentToast('This person is not registered in this session! Please contact the administrator.', 'toastFailure', 7000)
+      }
+    } else {
+      this.presentToast('Please supply a Staff Number!', 'toastFailure', 4000)
+    }
+    this.presentManualSignIn();
+  }
 
   getAttendee(personID) {
     let attendee = this.attendeeList.find((obj) => {
@@ -197,9 +263,14 @@ export class ScanPage {
         }
 
         this.sessionAttendanceRecordsDetailed.push(attendanceRecord);
-        this.presentToast('Your check-in was successful! ' + attendee.FullName + ' (' + attendee.StaffNumber + ')')
+        this.presentToast('Thank you. Your attendance is confirmed.', 'toastSuccess', 4000)
 
-        this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
+        try {
+          this.sessionAttendanceRecordsDetailed.sort((a, b) => b.CheckInTime.localeCompare(a.CheckInTime));
+        }
+        catch (err) {
+
+        }
 
         eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecords.push(attendanceRecord);
         eventsList[eventIndex].Sessions[sessionIndex].SessionAttendanceRecordsDetailed = this.sessionAttendanceRecordsDetailed;
@@ -239,13 +310,13 @@ export class ScanPage {
         this.setFields();
 
       } else {
-        this.presentToast('This person is not registered in this session! Please contact the administrator.')
+        this.presentToast('This person is not registered in this session! Please contact the administrator.', 'toastFailure', 7000)
       }
     } else {
       if (attendee) {
-        this.presentToast('You already checked-in! ' + attendee.FullName + ' (' + attendee.StaffNumber + ')');
+        this.presentToast('You already signed in!', 'toastSuccess', 4000);
       } else {
-        this.presentToast('This person is already checked-in!');
+        this.presentToast('This person is already signed in!', 'toastSuccess', 4000);
       }
     }
   }
@@ -296,7 +367,7 @@ export class ScanPage {
           //alert("permission unknown");
         }
       })
-      .catch((e: any) => alert('Error is: ' + e));
+    //.catch((e: any) => alert('Error is: ' + e));
   }
 
   toggleCamera() {
@@ -361,7 +432,7 @@ export class ScanPage {
 
   closeScanner() {
     this.qrScanner.hide();
-    this.scanSub.unsubscribe();
+    if (this.scanSub) this.scanSub.unsubscribe();
     this.closeIcon = "barcode";
     this.closeIconColor = "green";
     window.document.querySelector('ion-app').classList.remove('transparent-body');

@@ -1,6 +1,9 @@
 page-scan {
 
-   
+   .fab {
+    width: 70px !important;
+    height: 70px !important; 
+   }
 
 }
 
@@ -44,8 +47,23 @@ page-scan {
     display: none;
 }
 
-.toast {
-    font-weight: bolder;     
-    background-color: green;
+.toastSuccess {
+    .toast-message{
+        font-weight: bolder;     
+        background-color: green;
+        text-align: center;
+        font-size: 30pt; 
+    } 
+    background-color: green;   
+}
+
+.toastFailure {
+    .toast-message{
+        font-weight: bolder;     
+        background-color: red;
+        text-align: center;
+        font-size: 30pt; 
+    }     
+    background-color: red;  
 }
 

@@ -8,23 +8,21 @@
 
 <ion-content padding>
 
-  <!--<ion-fab left bottom small>
-    <button ion-fab color="dark" (click)="toggleFlash()">
-      <ion-icon name="flash" [color]="flashIconColor"></ion-icon>
-    </button>
-  </ion-fab>-->
-
-
-
   <ion-fab right top>
-    <button ion-fab mini color="primary" (click)="toggleCamera()" [disabled]='scannerDisabled'>
+    <button ion-fab color="primary" (click)="toggleCamera()" [disabled]='scannerDisabled'>
       <ion-icon name="reverse-camera"></ion-icon>
     </button>
   </ion-fab>
 
-  <ion-fab center bottom>
+  <ion-fab right bottom>
     <button ion-fab color="orange" (click)="toggleView()" [disabled]='scannerDisabled'>
       <ion-icon [name]="closeIcon" [color]="closeIconColor"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-fab left bottom>
+    <button ion-fab color="green" (click)="presentManualSignIn()" [disabled]='scannerDisabled'>
+      <ion-icon name="create"></ion-icon>
     </button>
   </ion-fab>
 
@@ -33,34 +31,7 @@
     <br />From: {{startTime}} To: {{endTime}}
   </h5>
 
-  <div id="divDetails">
-
-
-
-    <!--
-    <p>
-      <ion-icon name="calendar" color="orange"></ion-icon>
-      {{eventName}}
-      <br />Event ID: {{eventID}}
-      <br />Event Start: {{eventStart}}
-      <br /> Event End: {{eventEnd}}
-    </p>
-
-    <p indent>
-      <ion-icon name="briefcase" color="green"></ion-icon>
-      {{sessionName}}
-      <br />Session ID: {{sessionID}}
-      <br />Session Start: {{sessionStart}}
-      <br />Session End: {{sessionEnd}}
-    </p>
-    -->
-
-    <!--<ion-item [hidden]="isHiddenEmptyListMsg" text-wrap>
-      <ion-label>
-        <ion-icon name="list" color="orange"></ion-icon>
-        There are no attendendees checked-in.
-      </ion-label>
-    </ion-item>-->
+  <div id="divDetails">    
 
     <ion-item text-wrap>
       <ion-label>
@@ -76,6 +47,7 @@
         {{attendanceRecord.StaffNumber}} {{attendanceRecord.FullName}} {{attendanceRecord.CheckInTime | date: "hh:mm a"}}
       </ion-item>
     </ion-list>
+
   </div>
 
   <div style="position: absolute; height: 75%; width: 93%; " id="divScanner">
